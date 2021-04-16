@@ -1,0 +1,594 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AC883B0D2627A02D006479DA /* libsmb2_objc.m in Sources */ = {isa = PBXBuildFile; fileRef = AC883B0C2627A02D006479DA /* libsmb2_objc.m */; };
+		AC883B0E2627A02D006479DA /* libsmb2_objc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = AC883B0B2627A02D006479DA /* libsmb2_objc.h */; };
+		AC883B592627A060006479DA /* timestamps.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B172627A060006479DA /* timestamps.c */; };
+		AC883B5A2627A060006479DA /* aes.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B182627A060006479DA /* aes.c */; };
+		AC883B5B2627A060006479DA /* hmac.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B192627A060006479DA /* hmac.c */; };
+		AC883B5C2627A060006479DA /* smb2-cmd-query-directory.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B1A2627A060006479DA /* smb2-cmd-query-directory.c */; };
+		AC883B5D2627A061006479DA /* unicode.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B1B2627A060006479DA /* unicode.c */; };
+		AC883B5E2627A061006479DA /* dcerpc-lsa.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B1C2627A060006479DA /* dcerpc-lsa.c */; };
+		AC883B5F2627A061006479DA /* smb2-data-reparse-point.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B1D2627A060006479DA /* smb2-data-reparse-point.c */; };
+		AC883B602627A061006479DA /* compat.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B202627A060006479DA /* compat.c */; };
+		AC883B612627A061006479DA /* smb2-cmd-query-info.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B212627A060006479DA /* smb2-cmd-query-info.c */; };
+		AC883B622627A061006479DA /* aes128ccm.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B222627A060006479DA /* aes128ccm.c */; };
+		AC883B632627A061006479DA /* smb2-cmd-flush.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B232627A060006479DA /* smb2-cmd-flush.c */; };
+		AC883B642627A061006479DA /* krb5-wrapper.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B252627A060006479DA /* krb5-wrapper.c */; };
+		AC883B652627A061006479DA /* sha224-256.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B272627A060006479DA /* sha224-256.c */; };
+		AC883B662627A061006479DA /* smb2-cmd-echo.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B282627A060006479DA /* smb2-cmd-echo.c */; };
+		AC883B672627A061006479DA /* smb2-cmd-set-info.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B292627A060006479DA /* smb2-cmd-set-info.c */; };
+		AC883B682627A061006479DA /* init.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B2B2627A060006479DA /* init.c */; };
+		AC883B692627A061006479DA /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B2E2627A060006479DA /* sha1.c */; };
+		AC883B6A2627A061006479DA /* usha.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B2F2627A060006479DA /* usha.c */; };
+		AC883B6B2627A061006479DA /* socket.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B302627A060006479DA /* socket.c */; };
+		AC883B6C2627A061006479DA /* alloc.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B312627A060006479DA /* alloc.c */; };
+		AC883B6D2627A061006479DA /* smb2-cmd-logoff.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B332627A060006479DA /* smb2-cmd-logoff.c */; };
+		AC883B6E2627A061006479DA /* sha384-512.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B342627A060006479DA /* sha384-512.c */; };
+		AC883B6F2627A061006479DA /* dcerpc-srvsvc.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B362627A060006479DA /* dcerpc-srvsvc.c */; };
+		AC883B702627A061006479DA /* pdu.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B372627A060006479DA /* pdu.c */; };
+		AC883B712627A061006479DA /* smb2-cmd-error.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B382627A060006479DA /* smb2-cmd-error.c */; };
+		AC883B722627A061006479DA /* smb2-cmd-session-setup.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B392627A060006479DA /* smb2-cmd-session-setup.c */; };
+		AC883B732627A061006479DA /* smb2-cmd-ioctl.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B3A2627A060006479DA /* smb2-cmd-ioctl.c */; };
+		AC883B742627A061006479DA /* smb2-cmd-negotiate.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B3B2627A060006479DA /* smb2-cmd-negotiate.c */; };
+		AC883B752627A061006479DA /* smb2-signing.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B3F2627A060006479DA /* smb2-signing.c */; };
+		AC883B762627A061006479DA /* libsmb2.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B412627A060006479DA /* libsmb2.c */; };
+		AC883B772627A061006479DA /* sync.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B422627A060006479DA /* sync.c */; };
+		AC883B782627A061006479DA /* smb2-share-enum.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B432627A060006479DA /* smb2-share-enum.c */; };
+		AC883B792627A061006479DA /* smb2-cmd-tree-connect.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B452627A060006479DA /* smb2-cmd-tree-connect.c */; };
+		AC883B7A2627A061006479DA /* smb3-seal.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B472627A060006479DA /* smb3-seal.c */; };
+		AC883B7B2627A061006479DA /* md4c.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B482627A060006479DA /* md4c.c */; };
+		AC883B7C2627A061006479DA /* smb2-data-filesystem-info.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B492627A060006479DA /* smb2-data-filesystem-info.c */; };
+		AC883B7D2627A061006479DA /* hmac-md5.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B4C2627A060006479DA /* hmac-md5.c */; };
+		AC883B7E2627A061006479DA /* smb2-cmd-read.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B4D2627A060006479DA /* smb2-cmd-read.c */; };
+		AC883B7F2627A061006479DA /* smb2-data-file-info.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B4E2627A060006479DA /* smb2-data-file-info.c */; };
+		AC883B802627A061006479DA /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B4F2627A060006479DA /* md5.c */; };
+		AC883B812627A061006479DA /* smb2-cmd-create.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B502627A060006479DA /* smb2-cmd-create.c */; };
+		AC883B822627A061006479DA /* aes128ccm-test.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B512627A060006479DA /* aes128ccm-test.c */; };
+		AC883B832627A061006479DA /* smb2-cmd-tree-disconnect.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B522627A060006479DA /* smb2-cmd-tree-disconnect.c */; };
+		AC883B842627A061006479DA /* ntlmssp.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B532627A060006479DA /* ntlmssp.c */; };
+		AC883B852627A061006479DA /* dcerpc.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B542627A060006479DA /* dcerpc.c */; };
+		AC883B862627A061006479DA /* smb2-data-security-descriptor.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B552627A060006479DA /* smb2-data-security-descriptor.c */; };
+		AC883B872627A061006479DA /* smb2-cmd-close.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B562627A060006479DA /* smb2-cmd-close.c */; };
+		AC883B882627A061006479DA /* errors.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B572627A060006479DA /* errors.c */; };
+		AC883B892627A061006479DA /* smb2-cmd-write.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B582627A060006479DA /* smb2-cmd-write.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		AC883B062627A02D006479DA /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+				AC883B0E2627A02D006479DA /* libsmb2_objc.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		AC883B082627A02D006479DA /* liblibsmb2-objc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "liblibsmb2-objc.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC883B0B2627A02D006479DA /* libsmb2_objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libsmb2_objc.h; sourceTree = "<group>"; };
+		AC883B0C2627A02D006479DA /* libsmb2_objc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = libsmb2_objc.m; sourceTree = "<group>"; };
+		AC883B162627A060006479DA /* smb2-signing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "smb2-signing.h"; sourceTree = "<group>"; };
+		AC883B172627A060006479DA /* timestamps.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = timestamps.c; sourceTree = "<group>"; };
+		AC883B182627A060006479DA /* aes.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aes.c; sourceTree = "<group>"; };
+		AC883B192627A060006479DA /* hmac.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hmac.c; sourceTree = "<group>"; };
+		AC883B1A2627A060006479DA /* smb2-cmd-query-directory.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-cmd-query-directory.c"; sourceTree = "<group>"; };
+		AC883B1B2627A060006479DA /* unicode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unicode.c; sourceTree = "<group>"; };
+		AC883B1C2627A060006479DA /* dcerpc-lsa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "dcerpc-lsa.c"; sourceTree = "<group>"; };
+		AC883B1D2627A060006479DA /* smb2-data-reparse-point.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-data-reparse-point.c"; sourceTree = "<group>"; };
+		AC883B1F2627A060006479DA /* hmac-md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "hmac-md5.h"; sourceTree = "<group>"; };
+		AC883B202627A060006479DA /* compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = compat.c; sourceTree = "<group>"; };
+		AC883B212627A060006479DA /* smb2-cmd-query-info.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-cmd-query-info.c"; sourceTree = "<group>"; };
+		AC883B222627A060006479DA /* aes128ccm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aes128ccm.c; sourceTree = "<group>"; };
+		AC883B232627A060006479DA /* smb2-cmd-flush.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-cmd-flush.c"; sourceTree = "<group>"; };
+		AC883B242627A060006479DA /* smb3-seal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "smb3-seal.h"; sourceTree = "<group>"; };
+		AC883B252627A060006479DA /* krb5-wrapper.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "krb5-wrapper.c"; sourceTree = "<group>"; };
+		AC883B262627A060006479DA /* sha.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sha.h; sourceTree = "<group>"; };
+		AC883B272627A060006479DA /* sha224-256.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "sha224-256.c"; sourceTree = "<group>"; };
+		AC883B282627A060006479DA /* smb2-cmd-echo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-cmd-echo.c"; sourceTree = "<group>"; };
+		AC883B292627A060006479DA /* smb2-cmd-set-info.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-cmd-set-info.c"; sourceTree = "<group>"; };
+		AC883B2A2627A060006479DA /* ntlmssp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ntlmssp.h; sourceTree = "<group>"; };
+		AC883B2B2627A060006479DA /* init.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = init.c; sourceTree = "<group>"; };
+		AC883B2D2627A060006479DA /* md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = md5.h; sourceTree = "<group>"; };
+		AC883B2E2627A060006479DA /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sha1.c; sourceTree = "<group>"; };
+		AC883B2F2627A060006479DA /* usha.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = usha.c; sourceTree = "<group>"; };
+		AC883B302627A060006479DA /* socket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = socket.c; sourceTree = "<group>"; };
+		AC883B312627A060006479DA /* alloc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = alloc.c; sourceTree = "<group>"; };
+		AC883B322627A060006479DA /* sha-private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "sha-private.h"; sourceTree = "<group>"; };
+		AC883B332627A060006479DA /* smb2-cmd-logoff.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-cmd-logoff.c"; sourceTree = "<group>"; };
+		AC883B342627A060006479DA /* sha384-512.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "sha384-512.c"; sourceTree = "<group>"; };
+		AC883B362627A060006479DA /* dcerpc-srvsvc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "dcerpc-srvsvc.c"; sourceTree = "<group>"; };
+		AC883B372627A060006479DA /* pdu.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pdu.c; sourceTree = "<group>"; };
+		AC883B382627A060006479DA /* smb2-cmd-error.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-cmd-error.c"; sourceTree = "<group>"; };
+		AC883B392627A060006479DA /* smb2-cmd-session-setup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-cmd-session-setup.c"; sourceTree = "<group>"; };
+		AC883B3A2627A060006479DA /* smb2-cmd-ioctl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-cmd-ioctl.c"; sourceTree = "<group>"; };
+		AC883B3B2627A060006479DA /* smb2-cmd-negotiate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-cmd-negotiate.c"; sourceTree = "<group>"; };
+		AC883B3D2627A060006479DA /* md4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = md4.h; sourceTree = "<group>"; };
+		AC883B3F2627A060006479DA /* smb2-signing.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-signing.c"; sourceTree = "<group>"; };
+		AC883B402627A060006479DA /* aes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aes.h; sourceTree = "<group>"; };
+		AC883B412627A060006479DA /* libsmb2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = libsmb2.c; sourceTree = "<group>"; };
+		AC883B422627A060006479DA /* sync.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sync.c; sourceTree = "<group>"; };
+		AC883B432627A060006479DA /* smb2-share-enum.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-share-enum.c"; sourceTree = "<group>"; };
+		AC883B442627A060006479DA /* krb5-wrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "krb5-wrapper.h"; sourceTree = "<group>"; };
+		AC883B452627A060006479DA /* smb2-cmd-tree-connect.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-cmd-tree-connect.c"; sourceTree = "<group>"; };
+		AC883B462627A060006479DA /* compat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = compat.h; sourceTree = "<group>"; };
+		AC883B472627A060006479DA /* smb3-seal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb3-seal.c"; sourceTree = "<group>"; };
+		AC883B482627A060006479DA /* md4c.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = md4c.c; sourceTree = "<group>"; };
+		AC883B492627A060006479DA /* smb2-data-filesystem-info.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-data-filesystem-info.c"; sourceTree = "<group>"; };
+		AC883B4A2627A060006479DA /* aes128ccm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aes128ccm.h; sourceTree = "<group>"; };
+		AC883B4C2627A060006479DA /* hmac-md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "hmac-md5.c"; sourceTree = "<group>"; };
+		AC883B4D2627A060006479DA /* smb2-cmd-read.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-cmd-read.c"; sourceTree = "<group>"; };
+		AC883B4E2627A060006479DA /* smb2-data-file-info.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-data-file-info.c"; sourceTree = "<group>"; };
+		AC883B4F2627A060006479DA /* md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = md5.c; sourceTree = "<group>"; };
+		AC883B502627A060006479DA /* smb2-cmd-create.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-cmd-create.c"; sourceTree = "<group>"; };
+		AC883B512627A060006479DA /* aes128ccm-test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "aes128ccm-test.c"; sourceTree = "<group>"; };
+		AC883B522627A060006479DA /* smb2-cmd-tree-disconnect.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-cmd-tree-disconnect.c"; sourceTree = "<group>"; };
+		AC883B532627A060006479DA /* ntlmssp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ntlmssp.c; sourceTree = "<group>"; };
+		AC883B542627A060006479DA /* dcerpc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dcerpc.c; sourceTree = "<group>"; };
+		AC883B552627A060006479DA /* smb2-data-security-descriptor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-data-security-descriptor.c"; sourceTree = "<group>"; };
+		AC883B562627A060006479DA /* smb2-cmd-close.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-cmd-close.c"; sourceTree = "<group>"; };
+		AC883B572627A060006479DA /* errors.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = errors.c; sourceTree = "<group>"; };
+		AC883B582627A060006479DA /* smb2-cmd-write.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "smb2-cmd-write.c"; sourceTree = "<group>"; };
+		AC883B8D2627A0A4006479DA /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		AC883B8E2627A0A4006479DA /* portable-endian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "portable-endian.h"; sourceTree = "<group>"; };
+		AC883B922627A0A4006479DA /* poll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = poll.h; sourceTree = "<group>"; };
+		AC883B932627A0A4006479DA /* libsmb2-private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libsmb2-private.h"; sourceTree = "<group>"; };
+		AC883B942627A0A4006479DA /* asprintf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = asprintf.h; sourceTree = "<group>"; };
+		AC883B962627A0A4006479DA /* slist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = slist.h; sourceTree = "<group>"; };
+		AC883B982627A0A4006479DA /* libsmb2-dcerpc-lsa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libsmb2-dcerpc-lsa.h"; sourceTree = "<group>"; };
+		AC883B992627A0A4006479DA /* libsmb2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libsmb2.h; sourceTree = "<group>"; };
+		AC883B9A2627A0A4006479DA /* smb2-errors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "smb2-errors.h"; sourceTree = "<group>"; };
+		AC883B9B2627A0A4006479DA /* smb2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smb2.h; sourceTree = "<group>"; };
+		AC883B9C2627A0A4006479DA /* libsmb2-dcerpc-srvsvc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libsmb2-dcerpc-srvsvc.h"; sourceTree = "<group>"; };
+		AC883B9D2627A0A4006479DA /* libsmb2-dcerpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libsmb2-dcerpc.h"; sourceTree = "<group>"; };
+		AC883B9E2627A0A4006479DA /* libsmb2-raw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "libsmb2-raw.h"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AC883B052627A02D006479DA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AC883AFF2627A02D006479DA = {
+			isa = PBXGroup;
+			children = (
+				AC883B8B2627A0A4006479DA /* include */,
+				AC883B152627A060006479DA /* lib */,
+				AC883B0A2627A02D006479DA /* libsmb2-objc */,
+				AC883B092627A02D006479DA /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AC883B092627A02D006479DA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AC883B082627A02D006479DA /* liblibsmb2-objc.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AC883B0A2627A02D006479DA /* libsmb2-objc */ = {
+			isa = PBXGroup;
+			children = (
+				AC883B0B2627A02D006479DA /* libsmb2_objc.h */,
+				AC883B0C2627A02D006479DA /* libsmb2_objc.m */,
+			);
+			path = "libsmb2-objc";
+			sourceTree = "<group>";
+		};
+		AC883B152627A060006479DA /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				AC883B162627A060006479DA /* smb2-signing.h */,
+				AC883B172627A060006479DA /* timestamps.c */,
+				AC883B182627A060006479DA /* aes.c */,
+				AC883B192627A060006479DA /* hmac.c */,
+				AC883B1A2627A060006479DA /* smb2-cmd-query-directory.c */,
+				AC883B1B2627A060006479DA /* unicode.c */,
+				AC883B1C2627A060006479DA /* dcerpc-lsa.c */,
+				AC883B1D2627A060006479DA /* smb2-data-reparse-point.c */,
+				AC883B1F2627A060006479DA /* hmac-md5.h */,
+				AC883B202627A060006479DA /* compat.c */,
+				AC883B212627A060006479DA /* smb2-cmd-query-info.c */,
+				AC883B222627A060006479DA /* aes128ccm.c */,
+				AC883B232627A060006479DA /* smb2-cmd-flush.c */,
+				AC883B242627A060006479DA /* smb3-seal.h */,
+				AC883B252627A060006479DA /* krb5-wrapper.c */,
+				AC883B262627A060006479DA /* sha.h */,
+				AC883B272627A060006479DA /* sha224-256.c */,
+				AC883B282627A060006479DA /* smb2-cmd-echo.c */,
+				AC883B292627A060006479DA /* smb2-cmd-set-info.c */,
+				AC883B2A2627A060006479DA /* ntlmssp.h */,
+				AC883B2B2627A060006479DA /* init.c */,
+				AC883B2D2627A060006479DA /* md5.h */,
+				AC883B2E2627A060006479DA /* sha1.c */,
+				AC883B2F2627A060006479DA /* usha.c */,
+				AC883B302627A060006479DA /* socket.c */,
+				AC883B312627A060006479DA /* alloc.c */,
+				AC883B322627A060006479DA /* sha-private.h */,
+				AC883B332627A060006479DA /* smb2-cmd-logoff.c */,
+				AC883B342627A060006479DA /* sha384-512.c */,
+				AC883B362627A060006479DA /* dcerpc-srvsvc.c */,
+				AC883B372627A060006479DA /* pdu.c */,
+				AC883B382627A060006479DA /* smb2-cmd-error.c */,
+				AC883B392627A060006479DA /* smb2-cmd-session-setup.c */,
+				AC883B3A2627A060006479DA /* smb2-cmd-ioctl.c */,
+				AC883B3B2627A060006479DA /* smb2-cmd-negotiate.c */,
+				AC883B3D2627A060006479DA /* md4.h */,
+				AC883B3F2627A060006479DA /* smb2-signing.c */,
+				AC883B402627A060006479DA /* aes.h */,
+				AC883B412627A060006479DA /* libsmb2.c */,
+				AC883B422627A060006479DA /* sync.c */,
+				AC883B432627A060006479DA /* smb2-share-enum.c */,
+				AC883B442627A060006479DA /* krb5-wrapper.h */,
+				AC883B452627A060006479DA /* smb2-cmd-tree-connect.c */,
+				AC883B462627A060006479DA /* compat.h */,
+				AC883B472627A060006479DA /* smb3-seal.c */,
+				AC883B482627A060006479DA /* md4c.c */,
+				AC883B492627A060006479DA /* smb2-data-filesystem-info.c */,
+				AC883B4A2627A060006479DA /* aes128ccm.h */,
+				AC883B4C2627A060006479DA /* hmac-md5.c */,
+				AC883B4D2627A060006479DA /* smb2-cmd-read.c */,
+				AC883B4E2627A060006479DA /* smb2-data-file-info.c */,
+				AC883B4F2627A060006479DA /* md5.c */,
+				AC883B502627A060006479DA /* smb2-cmd-create.c */,
+				AC883B512627A060006479DA /* aes128ccm-test.c */,
+				AC883B522627A060006479DA /* smb2-cmd-tree-disconnect.c */,
+				AC883B532627A060006479DA /* ntlmssp.c */,
+				AC883B542627A060006479DA /* dcerpc.c */,
+				AC883B552627A060006479DA /* smb2-data-security-descriptor.c */,
+				AC883B562627A060006479DA /* smb2-cmd-close.c */,
+				AC883B572627A060006479DA /* errors.c */,
+				AC883B582627A060006479DA /* smb2-cmd-write.c */,
+			);
+			name = lib;
+			path = ../../../lib;
+			sourceTree = "<group>";
+		};
+		AC883B8B2627A0A4006479DA /* include */ = {
+			isa = PBXGroup;
+			children = (
+				AC883B8C2627A0A4006479DA /* esp */,
+				AC883B8E2627A0A4006479DA /* portable-endian.h */,
+				AC883B8F2627A0A4006479DA /* msvc */,
+				AC883B932627A0A4006479DA /* libsmb2-private.h */,
+				AC883B942627A0A4006479DA /* asprintf.h */,
+				AC883B962627A0A4006479DA /* slist.h */,
+				AC883B972627A0A4006479DA /* smb2 */,
+			);
+			name = include;
+			path = ../../../include;
+			sourceTree = "<group>";
+		};
+		AC883B8C2627A0A4006479DA /* esp */ = {
+			isa = PBXGroup;
+			children = (
+				AC883B8D2627A0A4006479DA /* config.h */,
+			);
+			path = esp;
+			sourceTree = "<group>";
+		};
+		AC883B8F2627A0A4006479DA /* msvc */ = {
+			isa = PBXGroup;
+			children = (
+				AC883B922627A0A4006479DA /* poll.h */,
+			);
+			path = msvc;
+			sourceTree = "<group>";
+		};
+		AC883B972627A0A4006479DA /* smb2 */ = {
+			isa = PBXGroup;
+			children = (
+				AC883B982627A0A4006479DA /* libsmb2-dcerpc-lsa.h */,
+				AC883B992627A0A4006479DA /* libsmb2.h */,
+				AC883B9A2627A0A4006479DA /* smb2-errors.h */,
+				AC883B9B2627A0A4006479DA /* smb2.h */,
+				AC883B9C2627A0A4006479DA /* libsmb2-dcerpc-srvsvc.h */,
+				AC883B9D2627A0A4006479DA /* libsmb2-dcerpc.h */,
+				AC883B9E2627A0A4006479DA /* libsmb2-raw.h */,
+			);
+			path = smb2;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AC883B072627A02D006479DA /* libsmb2-objc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AC883B112627A02D006479DA /* Build configuration list for PBXNativeTarget "libsmb2-objc" */;
+			buildPhases = (
+				AC883B042627A02D006479DA /* Sources */,
+				AC883B052627A02D006479DA /* Frameworks */,
+				AC883B062627A02D006479DA /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "libsmb2-objc";
+			productName = "libsmb2-objc";
+			productReference = AC883B082627A02D006479DA /* liblibsmb2-objc.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AC883B002627A02D006479DA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1240;
+				TargetAttributes = {
+					AC883B072627A02D006479DA = {
+						CreatedOnToolsVersion = 12.4;
+					};
+				};
+			};
+			buildConfigurationList = AC883B032627A02D006479DA /* Build configuration list for PBXProject "libsmb2-objc" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = AC883AFF2627A02D006479DA;
+			productRefGroup = AC883B092627A02D006479DA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AC883B072627A02D006479DA /* libsmb2-objc */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AC883B042627A02D006479DA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AC883B852627A061006479DA /* dcerpc.c in Sources */,
+				AC883B842627A061006479DA /* ntlmssp.c in Sources */,
+				AC883B5B2627A060006479DA /* hmac.c in Sources */,
+				AC883B882627A061006479DA /* errors.c in Sources */,
+				AC883B822627A061006479DA /* aes128ccm-test.c in Sources */,
+				AC883B632627A061006479DA /* smb2-cmd-flush.c in Sources */,
+				AC883B6E2627A061006479DA /* sha384-512.c in Sources */,
+				AC883B832627A061006479DA /* smb2-cmd-tree-disconnect.c in Sources */,
+				AC883B7D2627A061006479DA /* hmac-md5.c in Sources */,
+				AC883B792627A061006479DA /* smb2-cmd-tree-connect.c in Sources */,
+				AC883B712627A061006479DA /* smb2-cmd-error.c in Sources */,
+				AC883B782627A061006479DA /* smb2-share-enum.c in Sources */,
+				AC883B702627A061006479DA /* pdu.c in Sources */,
+				AC883B682627A061006479DA /* init.c in Sources */,
+				AC883B662627A061006479DA /* smb2-cmd-echo.c in Sources */,
+				AC883B612627A061006479DA /* smb2-cmd-query-info.c in Sources */,
+				AC883B5E2627A061006479DA /* dcerpc-lsa.c in Sources */,
+				AC883B5A2627A060006479DA /* aes.c in Sources */,
+				AC883B7A2627A061006479DA /* smb3-seal.c in Sources */,
+				AC883B6A2627A061006479DA /* usha.c in Sources */,
+				AC883B742627A061006479DA /* smb2-cmd-negotiate.c in Sources */,
+				AC883B5F2627A061006479DA /* smb2-data-reparse-point.c in Sources */,
+				AC883B602627A061006479DA /* compat.c in Sources */,
+				AC883B812627A061006479DA /* smb2-cmd-create.c in Sources */,
+				AC883B642627A061006479DA /* krb5-wrapper.c in Sources */,
+				AC883B732627A061006479DA /* smb2-cmd-ioctl.c in Sources */,
+				AC883B892627A061006479DA /* smb2-cmd-write.c in Sources */,
+				AC883B872627A061006479DA /* smb2-cmd-close.c in Sources */,
+				AC883B722627A061006479DA /* smb2-cmd-session-setup.c in Sources */,
+				AC883B622627A061006479DA /* aes128ccm.c in Sources */,
+				AC883B592627A060006479DA /* timestamps.c in Sources */,
+				AC883B7F2627A061006479DA /* smb2-data-file-info.c in Sources */,
+				AC883B6D2627A061006479DA /* smb2-cmd-logoff.c in Sources */,
+				AC883B772627A061006479DA /* sync.c in Sources */,
+				AC883B692627A061006479DA /* sha1.c in Sources */,
+				AC883B752627A061006479DA /* smb2-signing.c in Sources */,
+				AC883B762627A061006479DA /* libsmb2.c in Sources */,
+				AC883B6B2627A061006479DA /* socket.c in Sources */,
+				AC883B6C2627A061006479DA /* alloc.c in Sources */,
+				AC883B672627A061006479DA /* smb2-cmd-set-info.c in Sources */,
+				AC883B862627A061006479DA /* smb2-data-security-descriptor.c in Sources */,
+				AC883B5D2627A061006479DA /* unicode.c in Sources */,
+				AC883B7E2627A061006479DA /* smb2-cmd-read.c in Sources */,
+				AC883B652627A061006479DA /* sha224-256.c in Sources */,
+				AC883B6F2627A061006479DA /* dcerpc-srvsvc.c in Sources */,
+				AC883B5C2627A060006479DA /* smb2-cmd-query-directory.c in Sources */,
+				AC883B7C2627A061006479DA /* smb2-data-filesystem-info.c in Sources */,
+				AC883B0D2627A02D006479DA /* libsmb2_objc.m in Sources */,
+				AC883B7B2627A061006479DA /* md4c.c in Sources */,
+				AC883B802627A061006479DA /* md5.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AC883B0F2627A02D006479DA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		AC883B102627A02D006479DA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AC883B122627A02D006479DA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2Z797QJNH7;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					"HAVE_CONFIG_H=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					../../../include,
+					../../../include/smb2,
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AC883B132627A02D006479DA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 2Z797QJNH7;
+				GCC_PREPROCESSOR_DEFINITIONS = "HAVE_CONFIG_H=1";
+				HEADER_SEARCH_PATHS = (
+					../../../include,
+					../../../include/smb2,
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AC883B032627A02D006479DA /* Build configuration list for PBXProject "libsmb2-objc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC883B0F2627A02D006479DA /* Debug */,
+				AC883B102627A02D006479DA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AC883B112627A02D006479DA /* Build configuration list for PBXNativeTarget "libsmb2-objc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC883B122627A02D006479DA /* Debug */,
+				AC883B132627A02D006479DA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AC883B002627A02D006479DA /* Project object */;
+}
