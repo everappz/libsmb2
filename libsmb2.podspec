@@ -17,5 +17,5 @@ Pod::Spec.new do |s|
   'include/esp/config.h',
   'lib/*.{h,c}'
   s.requires_arc = true
-  s.xcconfig = { 'HEADER_SEARCH_PATHS' => '"$(PODS_ROOT)/libsmb2/include/..","$(PODS_ROOT)/libsmb2/include/smb2/.."' }
+  s.xcconfig = { 'HEADER_SEARCH_PATHS' => '"$(PODS_ROOT)/libsmb2/include/*.h","$(PODS_ROOT)/libsmb2/include/smb2/*.h"' }
 end
