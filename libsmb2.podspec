@@ -8,14 +8,14 @@ Pod::Spec.new do |s|
   s.source   = { :git => 'https://github.com/leshkoapps/libsmb2.git', :tag => "#{s.version}" }
   s.platform = :ios, '9.0'
   s.source_files = 
-  'include/smb2/*.{h}',
-  'include/msvc/poll.h',
-  'include/portable-endian.h',
-  'include/libsmb2-private.h',
-  'include/asprintf.h',
-  'include/slist.h',
-  'include/esp/config.h',
+  # 'include/smb2/*.{h}',
+  # 'include/msvc/poll.h',
+  # 'include/portable-endian.h',
+  # 'include/libsmb2-private.h',
+  # 'include/asprintf.h',
+  # 'include/slist.h',
+  # 'include/esp/config.h',
   'lib/*.{h,c}'
   s.requires_arc = true
-  s.xcconfig = { 'HEADER_SEARCH_PATHS' => '"$(PODS_ROOT)/libsmb2/include/*.h","$(PODS_ROOT)/libsmb2/include/smb2/*.h"' }
+  s.xcconfig = { 'HEADER_SEARCH_PATHS' => '"$(PODS_ROOT)/libsmb2/include","$(PODS_ROOT)/libsmb2/include/smb2"' }
 end
