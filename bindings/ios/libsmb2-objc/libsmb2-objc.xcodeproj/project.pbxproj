@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AC883B0D2627A02D006479DA /* libsmb2_objc.m in Sources */ = {isa = PBXBuildFile; fileRef = AC883B0C2627A02D006479DA /* libsmb2_objc.m */; };
-		AC883B0E2627A02D006479DA /* libsmb2_objc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = AC883B0B2627A02D006479DA /* libsmb2_objc.h */; };
 		AC883B592627A060006479DA /* timestamps.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B172627A060006479DA /* timestamps.c */; };
 		AC883B5A2627A060006479DA /* aes.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B182627A060006479DA /* aes.c */; };
 		AC883B5B2627A060006479DA /* hmac.c in Sources */ = {isa = PBXBuildFile; fileRef = AC883B192627A060006479DA /* hmac.c */; };
@@ -67,7 +65,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				AC883B0E2627A02D006479DA /* libsmb2_objc.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,8 +72,6 @@
 
 /* Begin PBXFileReference section */
 		AC883B082627A02D006479DA /* liblibsmb2-objc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "liblibsmb2-objc.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		AC883B0B2627A02D006479DA /* libsmb2_objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libsmb2_objc.h; sourceTree = "<group>"; };
-		AC883B0C2627A02D006479DA /* libsmb2_objc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = libsmb2_objc.m; sourceTree = "<group>"; };
 		AC883B162627A060006479DA /* smb2-signing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "smb2-signing.h"; sourceTree = "<group>"; };
 		AC883B172627A060006479DA /* timestamps.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = timestamps.c; sourceTree = "<group>"; };
 		AC883B182627A060006479DA /* aes.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aes.c; sourceTree = "<group>"; };
@@ -169,7 +164,6 @@
 			children = (
 				AC883B8B2627A0A4006479DA /* include */,
 				AC883B152627A060006479DA /* lib */,
-				AC883B0A2627A02D006479DA /* libsmb2-objc */,
 				AC883B092627A02D006479DA /* Products */,
 			);
 			sourceTree = "<group>";
@@ -180,15 +174,6 @@
 				AC883B082627A02D006479DA /* liblibsmb2-objc.a */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		AC883B0A2627A02D006479DA /* libsmb2-objc */ = {
-			isa = PBXGroup;
-			children = (
-				AC883B0B2627A02D006479DA /* libsmb2_objc.h */,
-				AC883B0C2627A02D006479DA /* libsmb2_objc.m */,
-			);
-			path = "libsmb2-objc";
 			sourceTree = "<group>";
 		};
 		AC883B152627A060006479DA /* lib */ = {
@@ -408,7 +393,6 @@
 				AC883B6F2627A061006479DA /* dcerpc-srvsvc.c in Sources */,
 				AC883B5C2627A060006479DA /* smb2-cmd-query-directory.c in Sources */,
 				AC883B7C2627A061006479DA /* smb2-data-filesystem-info.c in Sources */,
-				AC883B0D2627A02D006479DA /* libsmb2_objc.m in Sources */,
 				AC883B7B2627A061006479DA /* md4c.c in Sources */,
 				AC883B802627A061006479DA /* md5.c in Sources */,
 			);
