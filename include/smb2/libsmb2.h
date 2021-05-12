@@ -23,6 +23,10 @@
 extern "C" {
 #endif
 
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+
 struct smb2_iovec {
         uint8_t *buf;
         size_t len;
