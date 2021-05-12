@@ -17,5 +17,5 @@ Pod::Spec.new do |s|
   'include/slist.h',
   'lib/*.{h,c}'
   s.requires_arc = true
-  s.xcconfig = { 'USER_HEADER_SEARCH_PATHS' => '"$(PODS_ROOT)/libsmb2/include","$(PODS_ROOT)/libsmb2/include/smb2"' }
+  s.xcconfig = { 'HEADER_SEARCH_PATHS' => '"$(PODS_ROOT)/libsmb2/include","$(PODS_ROOT)/libsmb2/include/smb2"' }
 end
