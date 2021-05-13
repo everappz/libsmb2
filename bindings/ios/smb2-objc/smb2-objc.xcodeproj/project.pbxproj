@@ -71,7 +71,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		AC883B082627A02D006479DA /* liblibsmb2-objc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "liblibsmb2-objc.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC883B082627A02D006479DA /* libsmb2-objc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libsmb2-objc.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC883B162627A060006479DA /* smb2-signing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "smb2-signing.h"; sourceTree = "<group>"; };
 		AC883B172627A060006479DA /* timestamps.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = timestamps.c; sourceTree = "<group>"; };
 		AC883B182627A060006479DA /* aes.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aes.c; sourceTree = "<group>"; };
@@ -171,7 +171,7 @@
 		AC883B092627A02D006479DA /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AC883B082627A02D006479DA /* liblibsmb2-objc.a */,
+				AC883B082627A02D006479DA /* libsmb2-objc.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -293,9 +293,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AC883B072627A02D006479DA /* libsmb2-objc */ = {
+		AC883B072627A02D006479DA /* smb2-objc */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AC883B112627A02D006479DA /* Build configuration list for PBXNativeTarget "libsmb2-objc" */;
+			buildConfigurationList = AC883B112627A02D006479DA /* Build configuration list for PBXNativeTarget "smb2-objc" */;
 			buildPhases = (
 				AC883B042627A02D006479DA /* Sources */,
 				AC883B052627A02D006479DA /* Frameworks */,
@@ -305,9 +305,9 @@
 			);
 			dependencies = (
 			);
-			name = "libsmb2-objc";
+			name = "smb2-objc";
 			productName = "libsmb2-objc";
-			productReference = AC883B082627A02D006479DA /* liblibsmb2-objc.a */;
+			productReference = AC883B082627A02D006479DA /* libsmb2-objc.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -323,7 +323,7 @@
 					};
 				};
 			};
-			buildConfigurationList = AC883B032627A02D006479DA /* Build configuration list for PBXProject "libsmb2-objc" */;
+			buildConfigurationList = AC883B032627A02D006479DA /* Build configuration list for PBXProject "smb2-objc" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -336,7 +336,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AC883B072627A02D006479DA /* libsmb2-objc */,
+				AC883B072627A02D006479DA /* smb2-objc */,
 			);
 		};
 /* End PBXProject section */
@@ -452,7 +452,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -505,7 +505,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -554,7 +554,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AC883B032627A02D006479DA /* Build configuration list for PBXProject "libsmb2-objc" */ = {
+		AC883B032627A02D006479DA /* Build configuration list for PBXProject "smb2-objc" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AC883B0F2627A02D006479DA /* Debug */,
@@ -563,7 +563,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AC883B112627A02D006479DA /* Build configuration list for PBXNativeTarget "libsmb2-objc" */ = {
+		AC883B112627A02D006479DA /* Build configuration list for PBXNativeTarget "smb2-objc" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AC883B122627A02D006479DA /* Debug */,
