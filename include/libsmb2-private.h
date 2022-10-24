@@ -23,7 +23,7 @@
 #include "esp/config.h"
 #endif
 
-#if defined(PS2_EE_PLATFORM) || defined(PS3_PPU_PLATFORM) || defined(ESP_PLATFORM) || defined(__APPLE__)
+#if defined(PS2_EE_PLATFORM) || defined(PS3_PPU_PLATFORM) || defined(ESP_PLATFORM) || defined(__APPLE__) || defined(PS4_PLATFORM)
 /* We need this for time_t */
 #include <time.h>
 #endif
@@ -378,11 +378,6 @@ int smb2_process_ioctl_fixed(struct smb2_context *smb2,
                              struct smb2_pdu *pdu);
 int smb2_process_ioctl_variable(struct smb2_context *smb2,
                                 struct smb2_pdu *pdu);
-
-int smb2_decode_fileidfulldirectoryinformation(
-        struct smb2_context *smb2,
-        struct smb2_fileidfulldirectoryinformation *fs,
-        struct smb2_iovec *vec);
 
 int smb2_decode_file_basic_info(struct smb2_context *smb2,
                                 void *memctx,
