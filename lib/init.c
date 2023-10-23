@@ -350,7 +350,11 @@ void smb2_destroy_context(struct smb2_context *smb2)
         if (smb2->dirs) {
                 smb2_free_all_dirs(smb2);
         }
-
+        if (smb2->connect_cb) {
+           smb2->connect_cb(smb2, SMB2_STATUS_CANCELLED,
+                         NULL, smb2->connect_data);
+           smb2->connect_cb = NULL;
+        }
         free(smb2->session_key);
         smb2->session_key = NULL;
 
@@ -361,6 +365,10 @@ void smb2_destroy_context(struct smb2_context *smb2)
         free(discard_const(smb2->domain));
         free(discard_const(smb2->workstation));
         free(smb2->enc);
+
+        if (smb2->connect_data) {
+            free_c_data(smb2, smb2->connect_data);  /* sets smb2->connect_data to NULL */
+        }
 
         free(smb2);
 }
