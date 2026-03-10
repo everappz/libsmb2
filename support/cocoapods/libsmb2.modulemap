@@ -1,6 +1,4 @@
 framework module SMB2 [system] [extern_c] {
-    config_macros HAVE_STDINT_H, HAVE_TIME_H
-
     header "smb2-errors.h"
     header "smb2.h"
     header "smb2-ioctl.h"
@@ -8,6 +6,10 @@ framework module SMB2 [system] [extern_c] {
     header "libsmb2-dcerpc.h"
     header "libsmb2-dcerpc-lsa.h"
     header "libsmb2-dcerpc-srvsvc.h"
+
+    module Internal {
+        private header "libsmb2-private.h"
+    }
 
     explicit module Raw {
         header "libsmb2-raw.h"

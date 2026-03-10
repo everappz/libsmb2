@@ -45,7 +45,7 @@ Pod::Spec.new do |s|
       '"${PODS_TARGET_SRCROOT}/include/smb2"',
       '"${PODS_TARGET_SRCROOT}/lib"',
     ].join(' '),
-    'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) HAVE_CONFIG_H=1 _U_=__attribute__\(\(unused\)\)',
+    'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) HAVE_CONFIG_H=1 HAVE_STDINT_H=1 HAVE_TIME_H=1 _U_=__attribute__\(\(unused\)\)',
     'CLANG_ENABLE_MODULES' => 'NO',
   }
 
@@ -60,5 +60,7 @@ Pod::Spec.new do |s|
 
   s.prepare_command = <<-CMD
     rm -f include/module.modulemap
+    /usr/bin/sed -i '' 's/#ifdef HAVE_STDINT_H/#if 1 \\/* HAVE_STDINT_H *\\//' include/smb2/smb2.h
+    /usr/bin/sed -i '' 's/#ifdef HAVE_TIME_H/#if 1 \\/* HAVE_TIME_H *\\//' include/smb2/smb2.h
   CMD
 end
