@@ -33,6 +33,7 @@ Pod::Spec.new do |s|
                     'include/module.modulemap'
 
   s.header_dir = 'smb2'
+  s.module_name = 'SMB2'
   s.module_map = 'support/cocoapods/libsmb2.modulemap'
 
   s.prefix_header_file = 'include/apple/config.h'
