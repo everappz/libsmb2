@@ -148,6 +148,24 @@ struct dcerpc_pdu *dcerpc_allocate_pdu(struct dcerpc_context *dce,
                                        int direction, int payload_size);
 void dcerpc_free_pdu(struct dcerpc_context *dce, struct dcerpc_pdu *pdu);
 
+/*
+ * SERVER SIDE: build a complete DCERPC RESPONSE PDU (16-byte common header +
+ * 8-byte response header + NDR stub) into `out` (capacity `cap`). The stub is
+ * produced by running `rep_coder` over `rep` in the ENCODE direction, reusing
+ * the exact same NDR marshalling the client decode path uses. `call_id` and
+ * `context_id` are echoed from the request so the client can match the reply.
+ *
+ * Returns the number of bytes written to `out`, or -1 on error. It does not
+ * fragment: the caller must supply `cap` large enough for the whole reply.
+ *
+ * Intended for a minimal in-app RPC responder (e.g. srvsvc share enumeration
+ * served over a named pipe via FSCTL_PIPE_TRANSCEIVE).
+ */
+int dcerpc_server_build_response(struct dcerpc_context *dce,
+                                 uint32_t call_id, uint16_t context_id,
+                                 dcerpc_coder rep_coder, void *rep,
+                                 uint8_t *out, int cap);
+
 #ifdef __cplusplus
 }
 #endif
