@@ -1355,15 +1355,7 @@ open_flags_to_create_request(struct smb2_create_request *req,
 
         if (flags & O_SYNC) {
                 desired_access |= SMB2_SYNCHRONIZE;
-                /* FILE_NO_INTERMEDIATE_BUFFERING is invalid on directories per
-                 * MS-FSCC 2.1.5.1; Windows rejects a CREATE carrying both
-                 * FILE_DIRECTORY_FILE and FILE_NO_INTERMEDIATE_BUFFERING with
-                 * STATUS_INVALID_PARAMETER (e.g. a directory CHANGE_NOTIFY open
-                 * done with O_RDONLY|O_SYNC). Only apply non-buffered I/O to
-                 * non-directory opens. */
-                if (!(create_options & SMB2_FILE_DIRECTORY_FILE)) {
-                        create_options |= SMB2_FILE_NO_INTERMEDIATE_BUFFERING;
-                }
+                create_options |= SMB2_FILE_NO_INTERMEDIATE_BUFFERING;
         }
 
         memset(req, 0, sizeof(struct smb2_create_request));
