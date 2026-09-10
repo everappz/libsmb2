@@ -13,6 +13,7 @@
 #endif
 #include "libsmb2-dcerpc-prefix.h"
 #include "../libdcerpc/dcerpc-srvsvc.c"
+#include "../libdcerpc/dcerpc-srvsvc-server.c"
 #ifdef LIBSMB2_DCERPC_RESTORE_CONFIG_H
 #define HAVE_CONFIG_H 1
 #endif

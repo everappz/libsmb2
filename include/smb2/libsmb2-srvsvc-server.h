@@ -43,6 +43,24 @@ int smb2_srvsvc_server_netshareenum(struct smb2_context *smb2,
                                     int nshares,
                                     uint8_t *out, int cap);
 
+/*
+ * Build a srvsvc NetrShareGetInfo (opnum 0x10) level-1 RESPONSE for a single share (`name` + `type`,
+ * SRVSVC_SHARE_TYPE_* bits). Returns bytes written to `out`, or -1.
+ */
+int smb2_srvsvc_server_netsharegetinfo(struct smb2_context *smb2,
+                                       uint32_t call_id, uint16_t context_id,
+                                       const char *name, uint32_t type,
+                                       uint8_t *out, int cap);
+
+/*
+ * Build a srvsvc NetrServerGetInfo (opnum 0x15) level-101 RESPONSE describing this server
+ * (`server_name` + `comment`). Returns bytes written to `out`, or -1.
+ */
+int smb2_srvsvc_server_netservergetinfo(struct smb2_context *smb2,
+                                        uint32_t call_id, uint16_t context_id,
+                                        const char *server_name, const char *comment,
+                                        uint8_t *out, int cap);
+
 #ifdef __cplusplus
 }
 #endif

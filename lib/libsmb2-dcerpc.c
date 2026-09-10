@@ -15,6 +15,7 @@
 #endif
 #include "libsmb2-dcerpc-prefix.h"
 #include "../libdcerpc/dcerpc.c"
+#include "../libdcerpc/dcerpc-server-response.c"
 #ifdef LIBSMB2_DCERPC_RESTORE_CONFIG_H
 #define HAVE_CONFIG_H 1
 #endif

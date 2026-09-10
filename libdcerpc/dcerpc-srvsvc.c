@@ -62,7 +62,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <dcerpc/dcerpc-dtyp.h>
 #endif
 #include <dcerpc/dcerpc-srvsvc.h>
-#include <smb2/libsmb2-srvsvc-server.h>
 #include "libsmb2-raw.h"
 #include "libsmb2-private.h"
 
@@ -4485,60 +4484,4 @@ struct dcerpc_procedure srvsvc_procs[] = {
 #endif /* HAVE_DCERPC_FULL */
         {-1, NULL, NULL, 0, NULL, 0}
 };
-
-/*
- * Server-side helper (see smb2/libsmb2-srvsvc-server.h): build a NetrShareEnum
- * level-1 RESPONSE for a fixed share list, reusing the same NDR coder the
- * client decode path uses. Kept here (not in libdcerpc's HAVE_DCERPC_FULL
- * sections) so it is compiled into both libsmb2's minimal build and the full
- * libdcerpc; the NetrShareEnum coders themselves are always compiled.
- */
-#define SMB2_SRVSVC_SERVER_MAX_SHARES 64
-
-int
-smb2_srvsvc_server_netshareenum(struct smb2_context *smb2,
-                                uint32_t call_id, uint16_t context_id,
-                                const char *const *names,
-                                const uint32_t *types,
-                                int nshares,
-                                uint8_t *out, int cap)
-{
-        struct dcerpc_context *dce;
-        struct srvsvc_SHARE_INFO_1 shares[SMB2_SRVSVC_SERVER_MAX_SHARES];
-        struct srvsvc_NetrShareEnum_rep rep;
-        int i, n;
-
-        if (smb2 == NULL || out == NULL || names == NULL || types == NULL ||
-            nshares < 0) {
-                return -1;
-        }
-        if (nshares > SMB2_SRVSVC_SERVER_MAX_SHARES) {
-                nshares = SMB2_SRVSVC_SERVER_MAX_SHARES;
-        }
-
-        memset(shares, 0, sizeof(shares));
-        for (i = 0; i < nshares; i++) {
-                shares[i].netname = discard_const(names[i] ? names[i] : "");
-                shares[i].type = types[i];
-                shares[i].remark = discard_const("");
-        }
-
-        memset(&rep, 0, sizeof(rep));
-        rep.ses.Level = 1;
-        rep.ses.ShareEnum.Level1.EntriesRead = (uint32_t)nshares;
-        rep.ses.ShareEnum.Level1.share_info_1 = shares;
-        rep.total_entries = (uint32_t)nshares;
-        rep.resume_handle = 0;
-        rep.status = 0;
-
-        dce = dcerpc_create_context(smb2);
-        if (dce == NULL) {
-                return -1;
-        }
-        n = dcerpc_server_build_response(dce, call_id, context_id,
-                                         srvsvc_NetrShareEnum_rep_coder, &rep,
-                                         out, cap);
-        dcerpc_destroy_context(dce);
-        return n;
-}
 

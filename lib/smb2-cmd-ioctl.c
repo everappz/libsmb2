@@ -255,8 +255,10 @@ smb2_encode_ioctl_reply(struct smb2_context *smb2,
         smb2_set_uint32(iov, 32, SMB2_HEADER_SIZE +
                         (SMB2_IOCTL_REPLY_SIZE & 0xfffffffe) +
                         PAD_TO_64BIT(rep->input_count));
-        /* output_count */
-        smb2_set_uint32(iov, 36, len);
+        /* output_count: 0 when there is no output. `len` still holds the fixed reply-struct size
+         * here, so writing it for a zero-output FSCTL (e.g. FSCTL_SET_REPARSE_POINT success) would
+         * advertise a bogus output region the peer then rejects. */
+        smb2_set_uint32(iov, 36, rep->output_count ? len : 0);
         smb2_set_uint32(iov, 40, rep->flags);
 
         return 0;

@@ -4226,10 +4226,23 @@ smb2_create_request_cb(struct smb2_server *server, struct smb2_context *smb2, vo
         if (!ret) {
                 pdu = smb2_cmd_create_reply_async(smb2, &rep, NULL, cb_data);
         }
-        else if (ret < 0) {
+        else {
+                /* A create_cmd handler may return a POSITIVE POSIX errno to request a specific NT
+                 * status (so a rejected CREATE reports the right error, e.g. EEXIST for a
+                 * create-disposition collision). A negative/legacy failure stays NOT_IMPLEMENTED. */
+                uint32_t status = SMB2_STATUS_NOT_IMPLEMENTED;
+                if (ret > 0) {
+                        switch (ret) {
+                        case EEXIST: status = SMB2_STATUS_OBJECT_NAME_COLLISION; break;
+                        case ENOENT: status = SMB2_STATUS_OBJECT_NAME_NOT_FOUND; break;
+                        case EACCES:
+                        case EPERM:  status = SMB2_STATUS_ACCESS_DENIED; break;
+                        default:     status = SMB2_STATUS_NOT_IMPLEMENTED; break;
+                        }
+                }
                 memset(&err, 0, sizeof(err));
                 pdu = smb2_cmd_error_reply_async(smb2,
-                                &err, SMB2_CREATE, SMB2_STATUS_NOT_IMPLEMENTED, NULL, cb_data);
+                                &err, SMB2_CREATE, status, NULL, cb_data);
         }
         if (pdu) {
                 if (req->name) {
