@@ -158,8 +158,15 @@ smb2_spnego_create_negotiate_reply_blob(struct smb2_context *smb2, int allow_ntl
         /* for each negotiable mechanism */
 
 #ifdef HAVE_LIBKRB5
-        /* insert mechanism oids */
-        asn1ber_ber_from_oid(&asn_encoder, &oid_spnego_mech_krb5);
+        /*
+         * Advertise Kerberos only when the connection is not restricted to
+         * NTLMSSP. NTLM-only servers (e.g. guest/IPC$ daemons without a
+         * keytab) set SMB2_SEC_NTLMSSP so clients do not attempt KRB5 and
+         * abort after negotiate when no realm/creds are available.
+         */
+        if (smb2->sec != SMB2_SEC_NTLMSSP) {
+                asn1ber_ber_from_oid(&asn_encoder, &oid_spnego_mech_krb5);
+        }
 #endif
         if (allow_ntlmssp) {
                 /* insert mechanism oids */
@@ -505,6 +512,15 @@ smb2_spnego_unwrap_targ(struct smb2_context *smb2, const uint8_t *spnego,
                 case ASN1_CONTEXT(2):
                         /* response token */
                         require_typeandlen(&asn_decoder, asnOCTET_STRING, 8, fail);
+                        /* the token length is returned to the caller, which
+                         * reads that many bytes, so it must not run past the
+                         * end of the blob we were given
+                         */
+                        if (typelen > (uint32_t)(asn_decoder.src_count -
+                                                 asn_decoder.src_tail)) {
+                                fail_line = __LINE__;
+                                goto fail;
+                        }
                         *token  = asn_decoder.src + asn_decoder.src_tail;
                         token_len = typelen;
                         break;
@@ -533,7 +549,7 @@ smb2_spnego_unwrap_gssapi(struct smb2_context *smb2, const uint8_t *spnego,
         int decode_pos;
         int mech_bytes;
         uint32_t mechs = 0;
-        int fail_line;
+        int fail_line = 0;
         int ret;
 
         memset(&asn_decoder, 0, sizeof(asn_decoder));
@@ -574,11 +590,25 @@ smb2_spnego_unwrap_gssapi(struct smb2_context *smb2, const uint8_t *spnego,
         if (token) {
                 *token = NULL;
                 typelen = 0;
-                if (asn_decoder.src_count > 2 &&
+                /* Test the cursor, not the total length: when the sequence
+                 * of mechanism OIDs ends exactly at the end of the blob -
+                 * an ordinary negotiate reply with no mechToken and no
+                 * negHints - src_tail equals src_count and peeking here
+                 * reads one byte past the security buffer.
+                 */
+                if (asn_decoder.src_tail < asn_decoder.src_count &&
                                 asn_decoder.src[asn_decoder.src_tail] == ASN1_CONTEXT(2)) {
                         /* mech token, note we expect NTLMSSP (7 bytes) at least here */
                         require_typeandlen(&asn_decoder, ASN1_CONTEXT(2), 10, fail);
                         require_typeandlen(&asn_decoder, asnOCTET_STRING, 7, fail);
+                        /* as in unwrap_targ, the length we return bounds how
+                         * much of this buffer the caller will read
+                         */
+                        if (typelen > (uint32_t)(asn_decoder.src_count -
+                                                 asn_decoder.src_tail)) {
+                                fail_line = __LINE__;
+                                goto fail;
+                        }
                         *token  = asn_decoder.src + asn_decoder.src_tail;
                 }
                 return typelen;

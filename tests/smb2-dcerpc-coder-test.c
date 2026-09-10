@@ -24,19 +24,18 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "smb2.h"
 #include "libsmb2.h"
 #include "libsmb2-raw.h"
-#include "libsmb2-dcerpc.h"
-#include "libsmb2-dcerpc-lsa.h"
-#include "libsmb2-dcerpc-srvsvc.h"
+#include <dcerpc/dcerpc.h>
+#include <dcerpc/dcerpc-srvsvc.h>
 
 #ifndef discard_const
 #define discard_const(ptr) ((void *)((intptr_t)(ptr)))
 #endif
 
-void dcerpc_set_tctx(struct dcerpc_context *ctx, int tctx);
-void dcerpc_set_endian(struct dcerpc_pdu *pdu, int little_endian);
+void ndr_set_tctx(struct dcerpc_context *ctx, int tctx);
+void ndr_set_endian(struct dcerpc_pdu *pdu, int little_endian);
  
 int is_finished;
-struct ndr_context_handle PolicyHandle;
+struct dcerpc_context_handle PolicyHandle;
 
 int usage(void)
 {
@@ -55,7 +54,7 @@ static void test_dcerpc_coder(struct dcerpc_context *dce, char *method,
                               int print_buf, int endian)
 {
         struct dcerpc_pdu *pdu1, *pdu2;
-        struct smb2_iovec iov;
+        struct dcerpc_iovec iov;
         static unsigned char buf[65536];
         int offset;
         int i;
@@ -64,14 +63,14 @@ static void test_dcerpc_coder(struct dcerpc_context *dce, char *method,
         printf("Test codec for %s\n", method);
 
         /* Encode */
-        pdu1 = dcerpc_allocate_pdu(dce, DCERPC_ENCODE, req_size);
+        pdu1 = dcerpc_allocate_pdu(dce, ENCODING_NDR, DCERPC_ENCODE, req_size);
         iov.len = 65536;
         iov.buf = buf;
         memset(iov.buf, 0, iov.len);
         offset = 0;
-        dcerpc_set_endian(pdu1, endian);
-        if (dcerpc_ptr_coder(dce, pdu1, &iov, &offset, req,
-                             PTR_REF, coder)) {
+        ndr_set_endian(pdu1, endian);
+        if (ndr_ptr_coder(dce, pdu1, &iov, &offset, req,
+                          PTR_REF, coder)) {
                 printf("Encoding failed\n");
                 exit(20);
         }
@@ -116,11 +115,11 @@ static void test_dcerpc_coder(struct dcerpc_context *dce, char *method,
         }
         /* Decode it again */
         req2 = calloc(1, req_size);
-        pdu2 = dcerpc_allocate_pdu(dce, DCERPC_DECODE, req_size);
+        pdu2 = dcerpc_allocate_pdu(dce, ENCODING_NDR, DCERPC_DECODE, req_size);
         offset = 0;
-        dcerpc_set_endian(pdu2, endian);
-        if (dcerpc_ptr_coder(dce, pdu2, &iov, &offset, req2,
-                             PTR_REF, coder)) {
+        ndr_set_endian(pdu2, endian);
+        if (ndr_ptr_coder(dce, pdu2, &iov, &offset, req2,
+                          PTR_REF, coder)) {
                 printf("Encoding failed\n");
                 exit(20);
         }
@@ -158,9 +157,9 @@ static void test_utf16_ndr32_le(struct dcerpc_context *dce)
         };
 
         s1.utf8 = "\\\\win16-1";
-        dcerpc_set_tctx(dce, 0); /* NDR32 */
-        test_dcerpc_coder(dce, "dcerpc_utf16 NDR32 LE",
-                          dcerpc_utf16z_coder, compare_utf16,
+        ndr_set_tctx(dce, 0); /* NDR32 */
+        test_dcerpc_coder(dce, "ndr_utf16 NDR32 LE",
+                          ndr_utf16z_coder, compare_utf16,
                           &s1, sizeof(s1),
                           sizeof(buf), buf, 0, 1);
 }
@@ -176,9 +175,9 @@ static void test_utf16_ndr32_be(struct dcerpc_context *dce)
         };
 
         s1.utf8 = "\\\\win16-1";
-        dcerpc_set_tctx(dce, 0); /* NDR32 */
-        test_dcerpc_coder(dce, "dcerpc_utf16 NDR32 BE",
-                          dcerpc_utf16z_coder, compare_utf16,
+        ndr_set_tctx(dce, 0); /* NDR32 */
+        test_dcerpc_coder(dce, "ndr_utf16 NDR32 BE",
+                          ndr_utf16z_coder, compare_utf16,
                           &s1, sizeof(s1),
                           sizeof(buf), buf, 0, 0);
 }
@@ -196,9 +195,9 @@ static void test_utf16_ndr64_le(struct dcerpc_context *dce)
         };
 
         s1.utf8 = "\\\\win16-1";
-        dcerpc_set_tctx(dce, 1); /* NDR64 */
-        test_dcerpc_coder(dce, "dcerpc_utf16 NDR64 LE",
-                          dcerpc_utf16z_coder, compare_utf16,
+        ndr_set_tctx(dce, 1); /* NDR64 */
+        test_dcerpc_coder(dce, "ndr_utf16 NDR64 LE",
+                          ndr_utf16z_coder, compare_utf16,
                           &s1, sizeof(s1),
                           sizeof(buf), buf, 0, 1);
 }
@@ -212,7 +211,7 @@ static void test_utf16_ndr64_le(struct dcerpc_context *dce)
   int
   srvsvc_SHARE_INFO_1_coder(struct dcerpc_context *ctx,
                             struct dcerpc_pdu *pdu,
-                            struct smb2_iovec *iov, int *offset,
+                            struct dcerpc_iovec *iov, int *offset,
                             void *ptr)
 */
 
@@ -254,7 +253,7 @@ static void test_SHARE_INFO_1_ndr32_le(struct dcerpc_context *dce)
         s1.netname.utf8 = "IPC$";
         s1.type         = 0x80000003;
         s1.remark.utf8  = "Remote IPC";
-        dcerpc_set_tctx(dce, 0); /* NDR32 */
+        ndr_set_tctx(dce, 0); /* NDR32 */
         test_dcerpc_coder(dce, "dcerpc_SHARE_INFO_1 NDR32 LE",
                           srvsvc_SHARE_INFO_1_coder, compare_SHARE_INFO_1,
                           &s1, sizeof(s1),
@@ -408,7 +407,7 @@ static void test_SHARE_INFO_1_CONTAINER_ndr32_le(struct dcerpc_context *dce)
         si[9].netname.utf8 = "Users";
         si[9].type         = 0x00000000;
         si[9].remark.utf8  = "";
-        dcerpc_set_tctx(dce, 0); /* NDR32 */
+        ndr_set_tctx(dce, 0); /* NDR32 */
         test_dcerpc_coder(dce, "dcerpc_SHARE_INFO_1_CONTAINER NDR32 LE",
                           srvsvc_SHARE_INFO_1_CONTAINER_coder, compare_SHARE_INFO_1_CONTAINER,
                           &s1, sizeof(s1),
@@ -588,7 +587,7 @@ static void test_SHARE_INFO_1_CONTAINER_ndr64_le(struct dcerpc_context *dce)
         si[9].netname.utf8 = "Users";
         si[9].type         = 0x00000000;
         si[9].remark.utf8  = "";
-        dcerpc_set_tctx(dce, 1); /* NDR64 */
+        ndr_set_tctx(dce, 1); /* NDR64 */
         test_dcerpc_coder(dce, "dcerpc_SHARE_INFO_1_CONTAINER NDR64 LE",
                           srvsvc_SHARE_INFO_1_CONTAINER_coder, compare_SHARE_INFO_1_CONTAINER,
                           &s1, sizeof(s1),

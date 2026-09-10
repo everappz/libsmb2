@@ -24,15 +24,15 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "smb2.h"
 #include "libsmb2.h"
 #include "libsmb2-raw.h"
-#include "libsmb2-dcerpc.h"
-#include "libsmb2-dcerpc-lsa.h"
+#include <dcerpc/dcerpc.h>
+#include <dcerpc/dcerpc-lsa.h>
 
 #ifndef discard_const
 #define discard_const(ptr) ((void *)((intptr_t)(ptr)))
 #endif
 
 int is_finished;
-struct ndr_context_handle PolicyHandle;
+struct dcerpc_context_handle PolicyHandle;
 
 int usage(void)
 {
@@ -103,7 +103,7 @@ void ls_cb(struct dcerpc_context *dce, int status,
         }
 
         memcpy(&cl_req.PolicyHandle, &PolicyHandle,
-               sizeof(struct ndr_context_handle));
+               sizeof(struct dcerpc_context_handle));
         dcerpc_free_data(dce, rep);
         if (dcerpc_call_async(dce,
                               LSA_CLOSE,
@@ -122,9 +122,8 @@ void op_cb(struct dcerpc_context *dce, int status,
 {
         struct lsa_openpolicy2_rep *rep = command_data;
         struct lsa_lookupsids2_req ls_req;
-        PRPC_SID sid, *sids;
+        RPC_SID *sid, *sids;
         int num_sids;
-        uint32_t sa[2];
 
         if (status) {
                 dcerpc_free_data(dce, rep);
@@ -134,11 +133,11 @@ void op_cb(struct dcerpc_context *dce, int status,
         }
 
         memcpy(&PolicyHandle, &rep->PolicyHandle,
-               sizeof(struct ndr_context_handle));
+               sizeof(struct dcerpc_context_handle));
         memcpy(&ls_req.PolicyHandle, &PolicyHandle,
-               sizeof(struct ndr_context_handle));
+               sizeof(struct dcerpc_context_handle));
 
-        sid = malloc(sizeof(*sid) + 2 * sizeof(uint32_t));
+        sid = malloc(sizeof(struct RPC_SID));
         if (sid == NULL) {
                 printf("failed to allocate SID\n");
                 exit(10);
@@ -146,20 +145,19 @@ void op_cb(struct dcerpc_context *dce, int status,
         sid->Revision = 1;
         sid->SubAuthorityCount = 2;
         memcpy(sid->IdentifierAuthority, NT_SID_AUTHORITY, 6);
-        sid->SubAuthority = &sa[0];
         sid->SubAuthority[0] = 32;
         sid->SubAuthority[1] = 544;
 
         num_sids = 2;
-        sids = malloc(num_sids * sizeof(PRPC_SID));
+        sids = malloc(num_sids * sizeof(RPC_SID));
         if (sids == NULL) {
                 printf("failed to allocate SIDs\n");
                 exit(10);
         }
         ls_req.SidEnumBuffer.Entries = num_sids;
         ls_req.SidEnumBuffer.SidInfo = sids;
-        ls_req.SidEnumBuffer.SidInfo[0] = sid;
-        ls_req.SidEnumBuffer.SidInfo[1] = sid;
+        ls_req.SidEnumBuffer.SidInfo[0] = *sid;
+        ls_req.SidEnumBuffer.SidInfo[1] = *sid;
 
         ls_req.TranslatedNames.Entries = 0;
         ls_req.TranslatedNames.Names = NULL;
@@ -200,8 +198,8 @@ void co_cb(struct dcerpc_context *dce, int status,
         sprintf(op_req.SystemName, "\\\\%s", url->server);
 
         op_req.ObjectAttributes.Length = 24;
-        op_req.DesiredAccess = POLICY_LOOKUP_NAMES |
-                POLICY_VIEW_LOCAL_INFORMATION;
+        op_req.DesiredAccess = LSA_POLICY_LOOKUP_NAMES |
+                LSA_POLICY_VIEW_LOCAL_INFORMATION;
 
         if (dcerpc_call_async(dce,
                               LSA_OPENPOLICY2,
@@ -241,6 +239,9 @@ int main(int argc, char *argv[])
         }
         if (url->user) {
                 smb2_set_user(smb2, url->user);
+        }
+        if (url->domain) {
+                smb2_set_domain(smb2, url->domain);
         }
 
         smb2_set_security_mode(smb2, SMB2_NEGOTIATE_SIGNING_ENABLED);

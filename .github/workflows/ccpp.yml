@@ -25,16 +25,16 @@ jobs:
   build-windows:
     name: Windows build
 
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
     - uses: actions/checkout@v4
     - name: CMake configure
       run: |
-        cmake -G "Visual Studio 17 2022" .
+        cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
     - name: Build (MSVC)
       run: |
-        cmake --build .
+        cmake --build build --config Release -- /m
 
   build-ps2:
     name: PS2 build
@@ -215,10 +215,9 @@ jobs:
     runs-on: ubuntu-latest
     container: amigadev/crosstools:m68k-amigaos
     steps:
-    - name: Install dependencies
-      run: |
-        sudo apt update -y && sudo apt upgrade -y && sudo apt install -y ffmpeg gettext smpq
-
+    # No apt install/upgrade: the image is Debian sid and apt upgrade
+    # fails non-interactively on a sudoers conffile prompt. The Amiga
+    # makefiles only need the toolchain already in the container.
     - name: git checkout
       uses: actions/checkout@v4
 
@@ -234,10 +233,7 @@ jobs:
     runs-on: ubuntu-latest
     container: amigadev/crosstools:ppc-amigaos
     steps:
-    - name: Install dependencies
-      run: |
-        sudo apt update -y && sudo apt upgrade -y && sudo apt install -y ffmpeg gettext smpq
-
+    # No apt install/upgrade: same as Amiga OS3 (sid + sudoers prompt).
     - name: git checkout
       uses: actions/checkout@v4
 
@@ -247,3 +243,23 @@ jobs:
         make -f Makefile.AMIGA clean
         make -f Makefile.AMIGA
       
+
+  configure-embedded:
+    name: Embedded cmake configure
+
+    # The pico and esp-idf builds select different targets and skip the
+    # install rules, and getting those conditionals wrong breaks configure
+    # for both of them without any of the jobs above noticing. See issue
+    # #376. Configuring for the pico needs no sdk, so this is a cheap way
+    # to keep that logic honest. It configures only, it does not build.
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y libkrb5-dev
+
+    - name: CMake configure (Pico W)
+      run: cmake -S . -B build-pico -DPICO_BOARD=pico_w

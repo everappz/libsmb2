@@ -68,6 +68,18 @@
 #include <sys/errno.h>
 #endif
 
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
+#endif
+
+#ifdef HAVE_SYS_FCNTL_H
+#include <sys/fcntl.h>
+#endif
+
+#ifdef HAVE_SYS_RANDOM_H
+#include <sys/random.h>
+#endif
+
 #include "compat.h"
 
 #include "smb2.h"
@@ -84,7 +96,7 @@
 static struct smb2_context *active_contexts;
 
 static int
-smb2_parse_args(struct smb2_context *smb2, const char *args)
+smb2_parse_args(struct smb2_context *smb2, char *args)
 {
         while (args && *args != 0) {
                 char *next, *value;
@@ -100,7 +112,16 @@ smb2_parse_args(struct smb2_context *smb2, const char *args)
                 }
 
                 if (!strcmp(args, "seal")) {
-                        smb2->seal = 1;
+                        /* bare "seal" or "seal=1" requires encryption;
+                         * "seal=0" explicitly disables it. Leaving the
+                         * argument out entirely keeps the default
+                         * (SMB2_SEAL_MAYBE): advertise but don't require.
+                         */
+                        if (value && !strcmp(value, "0")) {
+                                smb2_set_seal(smb2, 0);
+                        } else {
+                                smb2_set_seal(smb2, 1);
+                        }
                 } else if (!strcmp(args, "sign")) {
                         smb2->sign = 1;
                 } else if (!strcmp(args, "ndr3264")) {
@@ -114,6 +135,11 @@ smb2_parse_args(struct smb2_context *smb2, const char *args)
                 } else if (!strcmp(args, "be")) {
                         smb2->endianness = 1;
                 } else if (!strcmp(args, "sec")) {
+                        if (!value) {
+                                smb2_set_error(smb2, "Missing value for "
+                                               "argument: %s", args);
+                                return -1;
+                        }
                         if(!strcmp(value, "krb5")) {
                                 smb2->sec = SMB2_SEC_KRB5;
                         } else if(!strcmp(value, "krb5cc")) {
@@ -127,6 +153,11 @@ smb2_parse_args(struct smb2_context *smb2, const char *args)
                                 return -1;
                         }
                 } else if (!strcmp(args, "vers")) {
+                        if (!value) {
+                                smb2_set_error(smb2, "Missing value for "
+                                               "argument: %s", args);
+                                return -1;
+                        }
                         if(!strcmp(value, "2")) {
                                 smb2->version = SMB2_VERSION_ANY2;
                         } else if(!strcmp(value, "3")) {
@@ -148,6 +179,11 @@ smb2_parse_args(struct smb2_context *smb2, const char *args)
                                 return -1;
                         }
                 } else if (!strcmp(args, "timeout")) {
+                        if (!value) {
+                                smb2_set_error(smb2, "Missing value for "
+                                               "argument: %s", args);
+                                return -1;
+                        }
                         smb2->timeout = (int)strtol(value, NULL, 10);
                 } else {
                         smb2_set_error(smb2, "Unknown argument: %s", args);
@@ -212,6 +248,7 @@ struct smb2_url *smb2_parse_url(struct smb2_context *smb2, const char *url)
         shared_folder = strchr(ptr, '/');
         if (!shared_folder) {
                 smb2_set_error(smb2, "Wrong URL format");
+                smb2_destroy_url(u);
                 return NULL;
         }
         len_shared_folder = strlen(shared_folder);
@@ -266,13 +303,102 @@ void smb2_destroy_url(struct smb2_url *url)
 }
 
 
+/*
+ * Fill buf with len random bytes.
+ *
+ * Several of the values libsmb2 generates - the NTLMv2 client challenge,
+ * the SMB 3.1.1 preauth salt and above all the AES-CCM nonce - are only
+ * worth anything if an attacker can not predict them. A repeated or
+ * predicted CCM nonce under a given key breaks both the confidentiality
+ * and the integrity of the sealed traffic, so use a real CSPRNG where the
+ * platform has one.
+ *
+ * Not all of the platforms libsmb2 supports have one, so every strong
+ * source is optional and we always fall back to the random() based
+ * sequence rather than failing. Returns 0 when the bytes came from a
+ * strong source and -1 when the fallback was used.
+ */
+int
+smb2_random_bytes(void *buf, size_t len)
+{
+        uint8_t *p = buf;
+
+#ifdef HAVE_ARC4RANDOM_BUF
+        arc4random_buf(p, len);
+        return 0;
+#else /* !HAVE_ARC4RANDOM_BUF */
+
+#ifdef HAVE_GETRANDOM
+        {
+                size_t done = 0;
+
+                while (done < len) {
+                        ssize_t count = getrandom(p + done, len - done, 0);
+
+                        if (count < 0) {
+                                if (errno == EINTR) {
+                                        continue;
+                                }
+                                break;
+                        }
+                        done += (size_t)count;
+                }
+                if (done == len) {
+                        return 0;
+                }
+        }
+#endif /* HAVE_GETRANDOM */
+
+#ifdef HAVE_DEV_URANDOM
+        {
+                int fd = open("/dev/urandom", O_RDONLY);
+
+                if (fd != -1) {
+                        size_t done = 0;
+
+                        while (done < len) {
+                                ssize_t count = read(fd, p + done, len - done);
+
+                                if (count <= 0) {
+                                        if (count < 0 && errno == EINTR) {
+                                                continue;
+                                        }
+                                        break;
+                                }
+                                done += (size_t)count;
+                        }
+                        close(fd);
+                        if (done == len) {
+                                return 0;
+                        }
+                }
+        }
+#endif /* HAVE_DEV_URANDOM */
+
+        /*
+         * Either this platform has no strong source or the one it has
+         * failed at runtime. Fall back to the random() sequence seeded in
+         * smb2_init_context().
+         */
+        {
+                size_t i;
+
+                for (i = 0; i < len; i++) {
+                        p[i] = random() & 0xff;
+                }
+        }
+        return -1;
+#endif /* !HAVE_ARC4RANDOM_BUF */
+}
+
 struct smb2_context *smb2_init_context(void)
 {
         struct smb2_context *smb2;
         char buf[1024] _U_;
-        int i, ret;
+        int ret;
         static int ctr;
 
+        /* Only seeds the fallback path in smb2_random_bytes(). */
         srandom((unsigned)time(NULL) ^ getpid() ^ ctr++);
 
         smb2 = calloc(1, sizeof(struct smb2_context));
@@ -291,14 +417,10 @@ struct smb2_context *smb2_init_context(void)
         smb2->version = SMB2_VERSION_ANY;
         smb2->ndr = 1;
 
-        for (i = 0; i < 8; i++) {
-                smb2->client_challenge[i] = random() & 0xff;
-        }
-        for (i = 0; i < SMB2_SALT_SIZE; i++) {
-                smb2->salt[i] = random() & 0xff;
-        }
-
-        snprintf(smb2->client_guid, 16, "libsmb2-%d", (int)random());
+        smb2_random_bytes(smb2->client_challenge,
+                          sizeof(smb2->client_challenge));
+        smb2_random_bytes(smb2->salt, sizeof(smb2->salt));
+        smb2_random_bytes(smb2->client_guid, sizeof(smb2->client_guid));
 
         smb2->session_key = NULL;
 
@@ -313,15 +435,14 @@ void smb2_destroy_context(struct smb2_context *smb2)
                 return;
         }
 
+        smb2_close_connecting_fds(smb2);
+
         if (SMB2_VALID_SOCKET(smb2->fd)) {
                 if (smb2->change_fd) {
                         smb2->change_fd(smb2, smb2->fd, SMB2_DEL_FD);
                 }
                 close(smb2->fd);
                 smb2->fd = SMB2_INVALID_SOCKET;
-        }
-        else {
-                smb2_close_connecting_fds(smb2);
         }
 
         while (smb2->outqueue) {
@@ -340,6 +461,14 @@ void smb2_destroy_context(struct smb2_context *smb2)
                         pdu->cb(smb2, SMB2_STATUS_SHUTDOWN, NULL, pdu->cb_data);
                 }
                 smb2_free_pdu(smb2, smb2->pdu);
+        }
+        if (smb2->next_pdu) {
+                struct smb2_pdu *pdu = smb2->next_pdu;
+
+                if (pdu->cb) {
+                        pdu->cb(smb2, SMB2_STATUS_SHUTDOWN, NULL, pdu->cb_data);
+                }
+                smb2_free_pdu(smb2, smb2->next_pdu);
         }
         while (smb2->waitqueue) {
                 struct smb2_pdu *pdu = smb2->waitqueue;
@@ -521,6 +650,11 @@ const char *smb2_get_client_guid(struct smb2_context *smb2)
         return smb2->client_guid;
 }
 
+const char *smb2_get_server_guid(struct smb2_context *smb2)
+{
+        return smb2->server_guid;
+}
+ 
 uint16_t smb2_get_dialect(struct smb2_context *smb2)
 {
         return smb2->dialect;
@@ -530,6 +664,45 @@ void smb2_set_security_mode(struct smb2_context *smb2, uint16_t security_mode)
 {
         smb2->security_mode = security_mode;
 }
+
+#if !defined(_XBOX) && !defined(_IOP) && !defined(__amigaos4__) && !defined(__AMIGA__) && !defined(__AROS__)
+/*
+ * Does name match the host part of the server string ?
+ *
+ * smb2->server can carry a port, and IPv6 is in [...] form, exactly as
+ * smb2_connect_async() parses it. NTLM_USER_FILE is keyed on the host
+ * alone, and a key in that file can not contain a port anyway since the
+ * colon is the field separator, so compare only the host part. Comparing
+ * the whole string meant that a URL naming a port never matched anything
+ * in the file, the client then had no password, and it silently fell
+ * back to an anonymous session.
+ */
+static int
+server_host_matches(const char *server, const char *name)
+{
+        const char *host, *end;
+        size_t len;
+
+        if (server == NULL || name == NULL) {
+                return 0;
+        }
+
+        host = server;
+        if (host[0] == '[') {
+                host++;
+                end = strchr(host, ']');
+                if (end == NULL) {
+                        return 0;
+                }
+                len = (size_t)(end - host);
+        } else {
+                end = strchr(host, ':');
+                len = end ? (size_t)(end - host) : strlen(host);
+        }
+
+        return strlen(name) == len && !strncmp(name, host, len);
+}
+#endif /* !defined(_XBOX) && !defined(_IOP) &&  ... */
 
 void smb2_set_password_from_file(struct smb2_context *smb2)
 {
@@ -609,7 +782,7 @@ void smb2_set_password_from_file(struct smb2_context *smb2)
                         fclose(fh);
                         return;
                 }
-                if (domain[0] && smb2->server && !strcmp(smb2->server, domain)) {
+                if (domain[0] && server_host_matches(smb2->server, domain)) {
                         smb2_set_password(smb2, password);
                         fclose(fh);
                         return;
@@ -709,7 +882,8 @@ void *smb2_get_opaque(struct smb2_context *smb2)
 
 void smb2_set_seal(struct smb2_context *smb2, int val)
 {
-        smb2->seal = val;
+        smb2->seal = val ? 1 : 0;
+        smb2->seal_requested = val ? SMB2_SEAL_MUST : SMB2_SEAL_NONE;
 }
 
 void smb2_set_sign(struct smb2_context *smb2, int val)

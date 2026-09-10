@@ -60,10 +60,13 @@
 
 #include "compat.h"
 
+/* Rename internal DCE/RPC symbols so they do not clash with libdcerpc. */
+#include "libsmb2-dcerpc-prefix.h"
+
 #include "smb2.h"
 #include "libsmb2.h"
-#include "libsmb2-dcerpc.h"
-#include "libsmb2-dcerpc-srvsvc.h"
+#include <dcerpc/dcerpc.h>
+#include <dcerpc/dcerpc-srvsvc.h>
 #include "libsmb2-raw.h"
 #include "libsmb2-private.h"
 
@@ -78,7 +81,7 @@ struct smb2nse {
 static void
 nse_free(struct smb2nse *nse)
 {
-        free(discard_const(nse->se_req.ServerName.utf8));
+        free(discard_const(nse->se_req.ServerName));
         free(nse);
 }
 
@@ -87,7 +90,7 @@ srvsvc_ioctl_cb(struct dcerpc_context *dce, int status,
                 void *command_data, void *cb_data)
 {
         struct smb2nse *nse = cb_data;
-        struct srvsvc_rep *rep = command_data;
+        struct srvsvc_NetrShareEnum_rep *rep = command_data;
         struct smb2_context *smb2 = dcerpc_get_smb2_context(dce);
 
         if (status != SMB2_STATUS_SUCCESS) {
@@ -96,7 +99,7 @@ srvsvc_ioctl_cb(struct dcerpc_context *dce, int status,
                 dcerpc_destroy_context(dce);
                 return;
         }
-        
+
         nse->cb(smb2, rep->status, rep, nse->cb_data);
         nse_free(nse);
         dcerpc_destroy_context(dce);
@@ -163,22 +166,9 @@ smb2_share_enum_async(struct smb2_context *smb2,
         }
         
         sprintf(server, "\\\\%s", smb2->server);
-        nse->se_req.ServerName.utf8 = server;
+        nse->se_req.ServerName = server;
 
-        switch (level) {
-        case SHARE_INFO_0:
-                nse->se_req.ses.Level = level;
-                nse->se_req.ses.ShareInfo.Level = level;
-                nse->se_req.ses.ShareInfo.Level0.EntriesRead = 0;
-                nse->se_req.ses.ShareInfo.Level0.Buffer = NULL;
-                break;
-        case SHARE_INFO_1:
-                nse->se_req.ses.Level = level;
-                nse->se_req.ses.ShareInfo.Level = level;
-                nse->se_req.ses.ShareInfo.Level1.EntriesRead = 0;
-                nse->se_req.ses.ShareInfo.Level1.Buffer = NULL;
-                break;
-        }
+        nse->se_req.ses.Level = level;
         nse->se_req.PreferedMaximumLength = 0xffffffff;
         nse->se_req.ResumeHandle = 0;
 

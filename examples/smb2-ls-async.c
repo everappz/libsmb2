@@ -84,6 +84,18 @@ void od_cb(struct smb2_context *smb2, int status,
                 case SMB2_TYPE_DIRECTORY:
                         type = "DIRECTORY";
                         break;
+                case SMB2_TYPE_FIFO:
+                        type = "FIFO";
+                        break;
+                case SMB2_TYPE_CHARDEV:
+                        type = "CHARDEV";
+                        break;
+                case SMB2_TYPE_BLOCKDEV:
+                        type = "BLOCKDEV";
+                        break;
+                case SMB2_TYPE_SOCKET:
+                        type = "SOCKET";
+                        break;
                 default:
                         type = "unknown";
                         break;
@@ -152,6 +164,10 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "Failed to parse url: %s\n",
                         smb2_get_error(smb2));
                 exit(0);
+        }
+
+        if (url->domain) {
+                smb2_set_domain(smb2, url->domain);
         }
 
         smb2_set_security_mode(smb2, SMB2_NEGOTIATE_SIGNING_ENABLED);

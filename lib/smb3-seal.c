@@ -96,14 +96,17 @@ smb3_encrypt_pdu(struct smb2_context *smb2,
         }
 
         memcpy(&pdu->crypt[0], xfer, 4);
-        for (i = 20; i < 31; i++) {
-                pdu->crypt[i] = random()&0xff;
-        }
+        /*
+         * The 11 byte AES-CCM nonce. CCM provides no confidentiality and no
+         * integrity at all once a nonce repeats under the same key, so this
+         * has to come from the strong source and not from random().
+         */
+        smb2_random_bytes(&pdu->crypt[20], 11);
         u32 = htole32(spl - 52);
         memcpy(&pdu->crypt[36], &u32, 4);
         u16 = htole16(SMB_ENCRYPTION_AES128_CCM);
         memcpy(&pdu->crypt[42], &u16, 2);
-        memcpy(&pdu->crypt[44], &smb2->session_id, 8);
+        *(uint64_t *)(void *)&pdu->crypt[44] = htole64(smb2->session_id);
 
         spl = 52;  /* transform header */
         for (tmp_pdu = pdu; tmp_pdu; tmp_pdu = tmp_pdu->next_compound) {
@@ -124,8 +127,8 @@ smb3_encrypt_pdu(struct smb2_context *smb2,
         return 0;
 }
 
-int
-smb3_decrypt_pdu(struct smb2_context *smb2)
+static int
+smb3_do_decrypt_pdu(struct smb2_context *smb2)
 {
         int rc;
 
@@ -146,6 +149,20 @@ smb3_decrypt_pdu(struct smb2_context *smb2)
                 smb2->in.iov[smb2->in.niov - 1].free = NULL;
                 smb2_free_iovector(smb2, &smb2->in);
 
+                /*
+                 * The decrypted blob is fed back through the same receive
+                 * state machine with enc_len standing in for the SPL, so it
+                 * needs the same sanity check the on-the-wire SPL gets.
+                 */
+                if (smb2->enc_len < SMB2_HEADER_SIZE ||
+                    smb2->enc_len > SMB2_MAX_PDU_SIZE) {
+                        smb2_set_error(smb2, "Invalid decrypted PDU length %zu",
+                                       smb2->enc_len);
+                        free(smb2->enc);
+                        smb2->enc = NULL;
+                        return -1;
+                }
+
                 smb2->spl = (uint32_t)smb2->enc_len;
                 smb2->recv_state = SMB2_RECV_HEADER;
                 if (smb2_add_iovector(smb2, &smb2->in, &smb2->header[0],
@@ -160,6 +177,32 @@ smb3_decrypt_pdu(struct smb2_context *smb2)
         rc = smb2_read_from_buf(smb2);
         free(smb2->enc);
         smb2->enc = NULL;
+
+        return rc;
+}
+
+int
+smb3_decrypt_pdu(struct smb2_context *smb2)
+{
+        int rc;
+
+        /*
+         * The decrypted payload is fed back through the same receive state
+         * machine, whose SMB2_RECV_HEADER case tests for the transform
+         * magic and calls us again on a match. SMB3 never nests transform
+         * headers, so a payload that contains one is a peer trying to
+         * recurse us off the end of the stack - and each level also
+         * overwrites smb2->enc, leaking the outer buffer and corrupting the
+         * outer read state. Refuse to go more than one deep.
+         */
+        if (smb2->enc_depth > 0) {
+                smb2_set_error(smb2, "Nested SMB3 transform header");
+                return -1;
+        }
+
+        smb2->enc_depth++;
+        rc = smb3_do_decrypt_pdu(smb2);
+        smb2->enc_depth--;
 
         return rc;
 }

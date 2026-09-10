@@ -34,8 +34,11 @@ extern "C" {
 
 #include <krb5/krb5.h>
 
-#if __APPLE__
-#import <GSS/GSS.h>
+/* Use Apple's GSS.framework only where it actually exists (issue #476);
+ * otherwise fall back to the normal Unix gssapi/gssapi.h codepath, e.g.
+ * when linking against a Heimdal/MIT krb5 install on macOS. */
+#if defined(__APPLE__) && defined(HAVE_GSS_GSS_H)
+#include <GSS/GSS.h>
 #else
 #include <gssapi/gssapi.h>
 #include <gssapi/gssapi_ext.h>

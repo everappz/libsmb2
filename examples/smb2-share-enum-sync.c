@@ -40,32 +40,32 @@ void print_shares(struct srvsvc_NetrShareEnum_rep *rep)
 
         switch (rep->ses.Level) {
         case SHARE_INFO_0:
-                printf("Number of shares:%d\n", rep->ses.ShareInfo.Level0.EntriesRead);
-                for (i = 0; i < rep->ses.ShareInfo.Level0.EntriesRead; i++) {
-                        printf("%-20s\n", rep->ses.ShareInfo.Level0.Buffer->share_info_0[i].netname.utf8);
+                printf("Number of shares:%d\n", rep->ses.ShareEnum.Level0.EntriesRead);
+                for (i = 0; i < rep->ses.ShareEnum.Level0.EntriesRead; i++) {
+                        printf("%-20s\n", rep->ses.ShareEnum.Level0.share_info_0[i].netname);
                 }
                 break;
         case SHARE_INFO_1:
-                printf("Number of shares:%d\n", rep->ses.ShareInfo.Level1.EntriesRead);
-                for (i = 0; i < rep->ses.ShareInfo.Level1.EntriesRead; i++) {
-                        printf("%-20s %-20s", rep->ses.ShareInfo.Level1.Buffer->share_info_1[i].netname.utf8,
-                               rep->ses.ShareInfo.Level1.Buffer->share_info_1[i].remark.utf8);
-                        if ((rep->ses.ShareInfo.Level1.Buffer->share_info_1[i].type & 3) == SHARE_TYPE_DISKTREE) {
+                printf("Number of shares:%d\n", rep->ses.ShareEnum.Level1.EntriesRead);
+                for (i = 0; i < rep->ses.ShareEnum.Level1.EntriesRead; i++) {
+                        printf("%-20s %-20s", rep->ses.ShareEnum.Level1.share_info_1[i].netname,
+                               rep->ses.ShareEnum.Level1.share_info_1[i].remark);
+                        if ((rep->ses.ShareEnum.Level1.share_info_1[i].type & 3) == SRVSVC_SHARE_TYPE_DISKTREE) {
                                 printf(" DISKTREE");
                         }
-                        if ((rep->ses.ShareInfo.Level1.Buffer->share_info_1[i].type & 3) == SHARE_TYPE_PRINTQ) {
+                        if ((rep->ses.ShareEnum.Level1.share_info_1[i].type & 3) == SRVSVC_SHARE_TYPE_PRINTQ) {
                                 printf(" PRINTQ");
                         }
-                        if ((rep->ses.ShareInfo.Level1.Buffer->share_info_1[i].type & 3) == SHARE_TYPE_DEVICE) {
+                        if ((rep->ses.ShareEnum.Level1.share_info_1[i].type & 3) == SRVSVC_SHARE_TYPE_DEVICE) {
                                 printf(" DEVICE");
                         }
-                        if ((rep->ses.ShareInfo.Level1.Buffer->share_info_1[i].type & 3) == SHARE_TYPE_IPC) {
+                        if ((rep->ses.ShareEnum.Level1.share_info_1[i].type & 3) == SRVSVC_SHARE_TYPE_IPC) {
                                 printf(" IPC");
                         }
-                        if (rep->ses.ShareInfo.Level1.Buffer->share_info_1[i].type & SHARE_TYPE_TEMPORARY) {
+                        if (rep->ses.ShareEnum.Level1.share_info_1[i].type & SRVSVC_SHARE_TYPE_TEMPORARY) {
                                 printf(" TEMPORARY");
                         }
-                        if (rep->ses.ShareInfo.Level1.Buffer->share_info_1[i].type & SHARE_TYPE_HIDDEN) {
+                        if (rep->ses.ShareEnum.Level1.share_info_1[i].type & SRVSVC_SHARE_TYPE_HIDDEN) {
                                 printf(" HIDDEN");
                         }
                         printf("\n");
@@ -119,6 +119,9 @@ int main(int argc, char *argv[])
         }
         if (url->user) {
                 smb2_set_user(smb2, url->user);
+        }
+        if (url->domain) {
+                smb2_set_domain(smb2, url->domain);
         }
 
         smb2_set_security_mode(smb2, SMB2_NEGOTIATE_SIGNING_ENABLED);

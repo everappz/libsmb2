@@ -710,6 +710,18 @@ smb2_queue_pdu(struct smb2_context *smb2, struct smb2_pdu *pdu)
 
         smb3_encrypt_pdu(smb2, pdu);
 
+        /*
+         * The preauth hash has to cover the bytes we actually put on the
+         * wire, so it can only be taken now that the header is encoded and
+         * the pdu is signed. It also has to be taken before the pdu goes
+         * on the outqueue, because a server writes its replies out from
+         * there straight away and frees them, and reading the pdu back
+         * afterwards is a use after free.
+         */
+        if (pdu->update_preauth_hash) {
+                smb3_update_preauth_hash(smb2, pdu->out.niov, &pdu->out.iov[0]);
+        }
+
         smb2_add_to_outqueue(smb2, pdu);
 }
 
@@ -779,6 +791,11 @@ smb2_find_pdu(struct smb2_context *smb2,
 static int
 smb2_is_error_response(struct smb2_context *smb2,
                        struct smb2_pdu *pdu) {
+        if (pdu->header.command == SMB2_IOCTL &&
+            smb2_ioctl_status_uses_reply_format(pdu->ctl_code,
+                                                smb2->hdr.status)) {
+                return 0;
+        }
         if ((smb2->hdr.status & SMB2_STATUS_SEVERITY_MASK) ==
             SMB2_STATUS_SEVERITY_ERROR) {
                 switch (smb2->hdr.status) {

@@ -62,14 +62,26 @@ smb2_decode_file_fs_volume_info(struct smb2_context *smb2,
         uint64_t t;
         const char *name;
 
+        if (vec->len < 18) {
+                return -1;
+        }
+
         smb2_get_uint64(vec,  0, &t);
         smb2_win_to_timeval(t, &fs->creation_time);
         smb2_get_uint32(vec,  8, &fs->volume_serial_number);
         smb2_get_uint32(vec, 12, &fs->volume_label_length);
         smb2_get_uint8(vec,  16, &fs->supports_objects);
         smb2_get_uint8(vec,  17, &fs->reserved);
+        /* volume_label_length is attacker-controlled; the label follows the
+         * 18-byte fixed header. Do not read past the received reply. */
+        if (fs->volume_label_length > vec->len - 18) {
+                return -1;
+        }
         name = smb2_utf16_to_utf8((uint16_t *)(void *)&vec->buf[18],
                             fs->volume_label_length / 2);
+        if (name == NULL) {
+                return -1;
+        }
         fs->volume_label = smb2_alloc_data(smb2, memctx, strlen(name) + 1);
         if (fs->volume_label == NULL) {
                 free(discard_const(name));
@@ -90,13 +102,32 @@ smb2_encode_file_fs_volume_info(struct smb2_context *smb2,
         struct smb2_utf16 *name;
         int name_len;
 
+        if (vec->len < 18) {
+                return -1;
+        }
+
         t = smb2_timeval_to_win(&fs->creation_time);
         smb2_set_uint64(vec,  0, t);
         smb2_set_uint32(vec,  8, fs->volume_serial_number);
         smb2_set_uint8(vec,  16, fs->supports_objects);
         smb2_set_uint8(vec,  17, fs->reserved);
+
+        if (fs->volume_label == NULL) {
+                smb2_set_uint32(vec, 12, 0);
+                return 18;
+        }
         name = smb2_utf8_to_utf16((char*)fs->volume_label);
+        if (name == NULL) {
+                smb2_set_error(smb2, "Could not convert volume label to "
+                               "UTF-16");
+                return -1;
+        }
         name_len = 2 * name->len;
+        if (vec->len - 18 < (size_t)name_len) {
+                free(name);
+                smb2_set_error(smb2, "Not enough space for volume label");
+                return -1;
+        }
         smb2_set_uint32(vec, 12, name_len);
         memcpy(&vec->buf[18], name->val, name_len);
         free(name);
@@ -187,6 +218,11 @@ smb2_decode_file_fs_attribute_info(struct smb2_context *smb2,
         smb2_get_uint32(vec, 8, &name_len);
 
         if (name_len > 0) {
+                /* name_len is attacker-controlled; the name follows the 12-byte
+                 * fixed header. Bound it against the received reply. */
+                if (name_len > vec->len - 12) {
+                        return -1;
+                }
                 name = smb2_utf16_to_utf8((uint16_t *)(void *)&vec->buf[12], name_len / 2);
                 if (!name) {
 
@@ -218,8 +254,22 @@ smb2_encode_file_fs_attribute_info(struct smb2_context *smb2,
         smb2_set_uint32(vec,  0, fs->filesystem_attributes);
         smb2_set_uint32(vec,  4, fs->maximum_component_name_length);
 
+        if (fs->filesystem_name == NULL) {
+                smb2_set_uint32(vec, 8, 0);
+                return 12;
+        }
         name = smb2_utf8_to_utf16((char*)fs->filesystem_name);
+        if (name == NULL) {
+                smb2_set_error(smb2, "Could not convert filesystem name to "
+                               "UTF-16");
+                return -1;
+        }
         name_len = 2  * name->len;
+        if (vec->len - 12 < (size_t)name_len) {
+                free(name);
+                smb2_set_error(smb2, "Not enough space for filesystem name");
+                return -1;
+        }
         smb2_set_uint32(vec, 8, name_len);
         memcpy(&vec->buf[12], name->val, name_len);
         free(name);
@@ -243,7 +293,7 @@ smb2_decode_file_fs_control_info(struct smb2_context *smb2,
         smb2_get_uint64(vec, 32, &fs->default_quota_limit);
         smb2_get_uint32(vec, 40, &fs->file_system_control_flags);
 
-        return 44;
+        return 0;
 }
 
 int

@@ -459,10 +459,10 @@ typedef size_t ssize_t;
 #endif
 
 long long int be64toh(long long int x);
+int gethostname(char *name, size_t len);
 #ifdef _IOP
 char *strdup(const char *s);
 
-int gethostname(char *name, size_t len);
 int random(void);
 void srandom(unsigned int seed);
 time_t time(time_t *tloc);
@@ -520,11 +520,14 @@ int iop_connect(int sockfd, struct sockaddr *addr, socklen_t addrlen);
 #endif
 
 #ifdef __ps2sdk_iop__
+/* PS2 IRX has no stdlib.h; allocators are provided by smb2man. */
 void *malloc(int size);
 
 void free(void *ptr);
 
 void *calloc(size_t nmemb, size_t size);
+
+void *realloc(void *ptr, size_t size);
 #endif
 
 ssize_t writev(t_socket fd, const struct iovec *iov, int iovcnt);

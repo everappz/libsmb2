@@ -1,4 +1,4 @@
-AC_INIT([libsmb2],[6.1.0],[ronniesahlberg@gmail.com])
+AC_INIT([libsmb2],[7.0.0],[ronniesahlberg@gmail.com])
 
 AC_PREREQ([2.69])
 AC_CONFIG_HEADERS([config.h])
@@ -25,18 +25,54 @@ AC_ARG_ENABLE([examples],
 AM_CONDITIONAL([ENABLE_EXAMPLES],
                [test "$enable_examples" = "yes"])
 
+dnl  Full DCE/RPC is built as a separate library (libdcerpc) that depends on
+dnl  libsmb2 for transport. libsmb2 keeps only NetrShareEnum levels 0/1/2
+dnl  with libsmb2_-prefixed internal symbols.
+
 AC_ARG_WITH([libkrb5],
             [AS_HELP_STRING([--without-libkrb5],
                             [Do not link with libkrb5 and use builtin
                              NTLMSSP module for authentication instead.])])
 
 AS_IF([test "x$with_libkrb5" != "xno"], [
-    MAYBE_LIBKRB5="-lgssapi_krb5"
     AC_DEFINE([HAVE_LIBKRB5], [1], [Whether we use gssapi_krb5 or not])
     AC_MSG_NOTICE([Build with gssapi_krb5 support])
-    dnl  Check for gssapi/gssapi.h
-    AC_CHECK_HEADERS([gssapi/gssapi.h], [], [
-        AC_MSG_ERROR([You need gssapi development files to compile libsmb2.])
+    dnl  On Apple platforms we prefer the GSS.framework header, but it is
+    dnl  not always present (e.g. older SDKs, or a Heimdal/MIT krb5 install
+    dnl  from a package manager instead of Xcode). Fall back to the normal
+    dnl  Unix gssapi/gssapi.h codepath whenever GSS/GSS.h is not available.
+    AC_CHECK_HEADERS([GSS/GSS.h])
+    AS_IF([test "x$ac_cv_header_GSS_GSS_h" = "xyes"], [
+        dnl  When GSS.framework is what we compile against, link *only*
+        dnl  the framework (and Kerberos.framework for the krb5_* API),
+        dnl  never -lgssapi_krb5/-lkrb5. Those plain -l names are found
+        dnl  by searching the whole library path, so on a system with a
+        dnl  package manager (MacPorts, Homebrew, ...) they can just as
+        dnl  easily resolve to a completely unrelated MIT/Heimdal krb5
+        dnl  install as to Apple's own. That wouldn't just be untidy: it
+        dnl  would run code compiled against GSS.framework's header (and
+        dnl  gated on GSS.framework's specific limitations, e.g. no
+        dnl  gss_set_neg_mechs, no s4u2self proxy credentials) against a
+        dnl  *different* implementation that doesn't actually share those
+        dnl  limitations. Frameworks are found via the framework search
+        dnl  path, not -L, so this keeps header and implementation
+        dnl  guaranteed to match, regardless of what else -L turns up.
+        MAYBE_LIBKRB5="-framework GSS -framework Kerberos"
+    ], [
+        AC_CHECK_HEADERS([gssapi/gssapi.h], [], [
+            AC_MSG_ERROR([You need gssapi development files to compile libsmb2.])
+        ])
+        dnl  -lgssapi_krb5 alone is not enough on a normal Unix/MIT krb5
+        dnl  install: the gssapi_krb5 library only imports krb5_* symbols
+        dnl  from libkrb5, it does not define them, so -no-undefined
+        dnl  shared library links (and static links) fail unless libkrb5
+        dnl  is linked explicitly. Only add -lkrb5 when it is actually
+        dnl  there, so this is a no-op wherever the old
+        dnl  -lgssapi_krb5-only link already worked (e.g. if a platform
+        dnl  bundles the krb5_* symbols into gssapi_krb5 itself).
+        AC_CHECK_LIB([krb5], [krb5_init_context],
+            [MAYBE_LIBKRB5="-lgssapi_krb5 -lkrb5"],
+            [MAYBE_LIBKRB5="-lgssapi_krb5"])
     ])
 ], [
     MAYBE_LIBKRB5=""
@@ -85,9 +121,26 @@ case $host in
     ;;
 esac
 AM_CONDITIONAL([HAVE_WIN32], [test "${SYS}" = "mingw32"])
+dnl  libdcerpc symbols collide with Microsoft RPC; never build it on Windows.
+AM_CONDITIONAL([BUILD_LIBDCERPC], [test "${SYS}" != "mingw32"])
+AS_IF([test "${SYS}" = "mingw32"], [
+    AC_MSG_NOTICE([Windows: libdcerpc disabled (symbol collisions with Microsoft RPC)])
+], [
+    AC_MSG_NOTICE([Build libdcerpc (full DCE/RPC interfaces)])
+])
 AC_SUBST([LIBSOCKET])
 
 AC_CHECK_LIB([dl], [dlsym], [], [AC_MSG_ERROR([dlsym not found, libdl is required])])
+
+dnl  CommonCrypto.framework is not always reachable on Apple platforms
+dnl  (e.g. a toolchain that doesn't see Apple's framework headers at
+dnl  all). Check for CommonCryptor.h, the header that actually declares
+dnl  the Cryptor API aes_apple.c uses (unlike the CommonCrypto.h
+dnl  umbrella header, which only exists from the 10.9 SDK onward,
+dnl  CommonCryptor.h has shipped since CommonCrypto was introduced in
+dnl  the 10.5 SDK). aes.c falls back to the portable reference AES
+dnl  implementation when it is missing.
+AC_CHECK_HEADERS([CommonCrypto/CommonCryptor.h])
 
 dnl  Check for poll.h
 AC_CHECK_HEADERS([poll.h])
@@ -146,6 +199,23 @@ AC_CHECK_HEADERS([errno.h])
 dnl  Check for sys/errno.h
 AC_CHECK_HEADERS([sys/errno.h])
 
+dnl  Check for a cryptographically strong source of random bytes.
+dnl  The NTLMv2 client challenge, the SMB 3.1.1 preauth salt and the
+dnl  AES-CCM nonce all need to be unpredictable. Not every platform we
+dnl  build for has such a source, so all of these are optional and
+dnl  smb2_random_bytes() falls back to random() when none is present.
+AC_CHECK_HEADERS([sys/random.h])
+AC_CHECK_FUNCS([arc4random_buf getrandom])
+
+AC_CACHE_CHECK([for /dev/urandom], [smb2_cv_dev_urandom], [
+    AS_IF([test -r /dev/urandom],
+          [smb2_cv_dev_urandom=yes],
+          [smb2_cv_dev_urandom=no])
+])
+AS_IF([test "x$smb2_cv_dev_urandom" = xyes], [
+    AC_DEFINE([HAVE_DEV_URANDOM], [1], [Whether /dev/urandom can be read])
+])
+
 dnl  Check if sockaddr data struct includes a "sa_len"
 AC_CHECK_MEMBER([struct sockaddr.sa_len], [
     AC_DEFINE([HAVE_SOCKADDR_LEN], [1], [Whether sockaddr struct has sa_len])
@@ -176,9 +246,10 @@ AC_CONFIG_FILES([
     examples/Makefile
     include/Makefile
     lib/Makefile
+    libdcerpc/Makefile
     tests/Makefile
     utils/Makefile
 ])
 
-AC_CONFIG_FILES([libsmb2.pc])
+AC_CONFIG_FILES([libsmb2.pc libdcerpc.pc])
 AC_OUTPUT
