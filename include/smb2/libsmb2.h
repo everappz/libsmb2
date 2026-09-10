@@ -1578,6 +1578,10 @@ struct smb2_server {
         uint32_t max_read_size;
         uint32_t max_write_size;
         int signing_enabled;
+        /* when non-0 the server requires SMB3 encryption (seal) for every
+         * post-session-setup PDU; needs an authenticated (non-anonymous)
+         * session and a negotiated 3.x dialect */
+        int encryption_enabled;
         int allow_anonymous;
         /* this can be set non-0 to delegate client authentication to
          * another client and allow any authentication to this server */

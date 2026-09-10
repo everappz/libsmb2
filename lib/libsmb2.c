@@ -4917,20 +4917,26 @@ smb2_session_setup_request_cb(struct smb2_context *smb2, int status, void *comma
                 }
         }
 #endif
-        if (smb2->sign && have_valid_session_key == 0) {
+        if ((smb2->sign || smb2->seal) && have_valid_session_key == 0) {
                 smb2_close_context(smb2);
-                smb2_set_error(smb2, "Signing required by server. Session "
-                               "Key is not available %s",
+                smb2_set_error(smb2, "Signing/encryption required by server. "
+                               "Session Key is not available %s",
                                smb2_get_error(smb2));
                 smb2_close_context(smb2);
                 return;
         }
 
-        if (smb2->sign)  {
-                /* Derive the signing key from session key
-                * This is based on negotiated protocol
+        if (smb2->sign || smb2->seal)  {
+                /* Derive the signing/encryption keys from the session key.
+                * This is based on the negotiated protocol. For seal this
+                * yields serverin_key/serverout_key used by smb3_encrypt_pdu.
                 */
                 smb2_create_signing_key(smb2);
+        }
+
+        if (smb2->seal) {
+                /* Tell the client every PDU from here on is encrypted. */
+                rep.session_flags |= SMB2_SESSION_FLAG_IS_ENCRYPT_DATA;
         }
 
         if (server->allow_anonymous &&
@@ -5099,6 +5105,17 @@ smb2_negotiate_request_cb(struct smb2_context *smb2, int status, void *command_d
                         if (req->capabilities & SMB2_GLOBAL_CAP_LARGE_MTU) {
                                 smb2->supports_multi_credit = 1;
                         }
+                }
+
+                /* Server-side: turn on encryption (seal) when the app asked
+                 * for it and we negotiated a 3.x dialect. 3.1.1 advertises
+                 * the cipher via a negotiate context rather than the global
+                 * capability bit, so it is handled separately below. */
+                if (server->encryption_enabled &&
+                    (smb2->dialect == SMB2_VERSION_0300 ||
+                     smb2->dialect == SMB2_VERSION_0302 ||
+                     smb2->dialect == SMB2_VERSION_0311)) {
+                        smb2->seal = 1;
                 }
 
                 if (smb2->seal && (smb2->dialect == SMB2_VERSION_0300 ||

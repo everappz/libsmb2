@@ -117,7 +117,14 @@ smb3_encrypt_pdu(struct smb2_context *smb2,
                 }
         }
 
-        aes128ccm_encrypt(smb2->serverin_key,
+        /*
+         * Key roles are named from the client's point of view: the client
+         * encrypts with serverin_key (what the server decrypts incoming with)
+         * and decrypts with serverout_key. When we ARE the server the roles
+         * are reversed, so pick the opposite key.
+         */
+        aes128ccm_encrypt(smb2_is_server(smb2) ? smb2->serverout_key
+                                               : smb2->serverin_key,
                           &pdu->crypt[20], 11,
                           &pdu->crypt[20], 32,
                           &pdu->crypt[52], spl - 52,
@@ -132,7 +139,8 @@ smb3_do_decrypt_pdu(struct smb2_context *smb2)
 {
         int rc;
 
-        if (aes128ccm_decrypt(smb2->serverout_key,
+        if (aes128ccm_decrypt(smb2_is_server(smb2) ? smb2->serverin_key
+                                                   : smb2->serverout_key,
                               &smb2->in.iov[smb2->in.niov - 2].buf[20], 11,
                               &smb2->in.iov[smb2->in.niov - 2].buf[20], 32,
                               &smb2->in.iov[smb2->in.niov - 1].buf[0],
