@@ -32,6 +32,15 @@ Pod::Spec.new do |s|
   s.exclude_files = 'lib/ps2/**/*',
                     'include/module.modulemap'
 
+  # The DCE/RPC sources live in libdcerpc/ and are NOT compiled as their own
+  # translation units. They are pulled in via `#include "../libdcerpc/*.c"`
+  # from the lib/libsmb2-dcerpc*.c wrappers (so the symbol-prefixing in
+  # libsmb2-dcerpc-prefix.h applies). CocoaPods only copies files it matches,
+  # so preserve the directory to keep those relative includes resolvable
+  # without adding the .c files to the compile phase (which would double-define
+  # every dcerpc symbol).
+  s.preserve_paths = 'libdcerpc/**/*'
+
   s.header_dir = 'smb2'
   s.module_name = 'SMB2'
   s.module_map = 'support/cocoapods/libsmb2.modulemap'

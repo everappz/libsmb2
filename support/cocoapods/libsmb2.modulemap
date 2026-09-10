@@ -3,9 +3,8 @@ framework module SMB2 [system] [extern_c] {
     header "smb2.h"
     header "smb2-ioctl.h"
     header "libsmb2.h"
-    header "libsmb2-dcerpc.h"
-    header "libsmb2-dcerpc-lsa.h"
-    header "libsmb2-dcerpc-srvsvc.h"
+    header "libsmb2-share-enum.h"
+    header "libsmb2-srvsvc-server.h"
 
     module Internal {
         private header "libsmb2-private.h"
