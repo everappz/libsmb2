@@ -712,6 +712,17 @@ read_more_data:
                 }
                 goto read_more_data;
         case SMB2_RECV_FIXED:
+                /* A matched reply always has smb2->pdu set before we switch to
+                 * FIXED, and an unmatched one is diverted to SMB2_RECV_UNKNOWN.
+                 * But a stray/late reply during teardown (or one arriving after
+                 * smb2->pdu was cleared) can reach here with no PDU: drop the
+                 * connection cleanly instead of dereferencing NULL (EXC_BAD_ACCESS
+                 * in smb2_is_error_response). */
+                if (pdu == NULL) {
+                        smb2_set_error(smb2, "No matching PDU for fixed reply "
+                                       "payload");
+                        return -1;
+                }
                 len = smb2_process_payload_fixed(smb2, pdu);
                 if (len < 0) {
                         smb2_set_error(smb2, "Failed to parse fixed part of "
@@ -802,6 +813,11 @@ read_more_data:
                  * reading this PDU */
                 break;
         case SMB2_RECV_VARIABLE:
+                if (pdu == NULL) {
+                        smb2_set_error(smb2, "No matching PDU for variable reply "
+                                       "payload");
+                        return -1;
+                }
                 if (smb2_process_payload_variable(smb2, pdu) < 0) {
                         smb2_set_error(smb2, "Failed to parse variable part of "
                                        "command payload. %s",
@@ -947,6 +963,13 @@ read_more_data:
         }
 
         is_chained = smb2->hdr.next_command;
+
+        /* Same guard as the FIXED/VARIABLE states: never invoke a callback off a
+         * NULL PDU (a stray reply reaching the completion tail during teardown). */
+        if (pdu == NULL) {
+                smb2_set_error(smb2, "No matching PDU when completing reply");
+                return -1;
+        }
 
         if (smb2_is_server(smb2)) {
                 /* queue requests to correlate our replies we send back later */
