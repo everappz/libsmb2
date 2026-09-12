@@ -445,6 +445,13 @@ void smb2_destroy_context(struct smb2_context *smb2)
                 smb2->fd = SMB2_INVALID_SOCKET;
         }
 
+        /* A PDU can be aliased across these lists: smb2->pdu (or next_pdu) may ALSO still be linked on
+         * the outqueue / waitqueue (e.g. a connect / session-setup reply whose processing aborted before
+         * it was delisted). Freeing the singleton first and then re-walking the same pointer in a queue
+         * loop invoked its callback TWICE -> the second call ran session_setup_cb on an already-freed
+         * connect_data (c_data->cb garbage) -> EXC_BAD_ACCESS. So drain the queues FIRST, and clear
+         * smb2->pdu / next_pdu whenever we free the shared PDU, so every PDU (and its callback) is freed
+         * exactly once. */
         while (smb2->outqueue) {
                 struct smb2_pdu *pdu = smb2->outqueue;
 
@@ -452,23 +459,13 @@ void smb2_destroy_context(struct smb2_context *smb2)
                 if (pdu->cb) {
                         pdu->cb(smb2, SMB2_STATUS_SHUTDOWN, NULL, pdu->cb_data);
                 }
+                if (pdu == smb2->pdu) {
+                        smb2->pdu = NULL;
+                }
+                if (pdu == smb2->next_pdu) {
+                        smb2->next_pdu = NULL;
+                }
                 smb2_free_pdu(smb2, pdu);
-        }
-        if (smb2->pdu) {
-                struct smb2_pdu *pdu = smb2->pdu;
-
-                if (pdu->cb) {
-                        pdu->cb(smb2, SMB2_STATUS_SHUTDOWN, NULL, pdu->cb_data);
-                }
-                smb2_free_pdu(smb2, smb2->pdu);
-        }
-        if (smb2->next_pdu) {
-                struct smb2_pdu *pdu = smb2->next_pdu;
-
-                if (pdu->cb) {
-                        pdu->cb(smb2, SMB2_STATUS_SHUTDOWN, NULL, pdu->cb_data);
-                }
-                smb2_free_pdu(smb2, smb2->next_pdu);
         }
         while (smb2->waitqueue) {
                 struct smb2_pdu *pdu = smb2->waitqueue;
@@ -480,7 +477,28 @@ void smb2_destroy_context(struct smb2_context *smb2)
                 if (pdu == smb2->pdu) {
                         smb2->pdu = NULL;
                 }
+                if (pdu == smb2->next_pdu) {
+                        smb2->next_pdu = NULL;
+                }
                 smb2_free_pdu(smb2, pdu);
+        }
+        if (smb2->pdu) {
+                struct smb2_pdu *pdu = smb2->pdu;
+
+                if (pdu->cb) {
+                        pdu->cb(smb2, SMB2_STATUS_SHUTDOWN, NULL, pdu->cb_data);
+                }
+                smb2_free_pdu(smb2, smb2->pdu);
+                smb2->pdu = NULL;
+        }
+        if (smb2->next_pdu) {
+                struct smb2_pdu *pdu = smb2->next_pdu;
+
+                if (pdu->cb) {
+                        pdu->cb(smb2, SMB2_STATUS_SHUTDOWN, NULL, pdu->cb_data);
+                }
+                smb2_free_pdu(smb2, smb2->next_pdu);
+                smb2->next_pdu = NULL;
         }
         smb2_free_iovector(smb2, &smb2->in);
 
