@@ -5309,6 +5309,15 @@ int smb2_serve_port(struct smb2_server *server, const int max_connections, smb2_
                 maxfd = server->fd;
 
                 for (smb2 = smb2_active_contexts(); smb2; smb2 = smb2->next) {
+                        /* Only OUR server contexts (the listening context + accepted clients).
+                         * active_contexts is a single PROCESS-GLOBAL list, so it also contains this
+                         * app's OUTBOUND CLIENT contexts (AMSMB2Manager). Building fdsets for / servicing
+                         * those from the serve loop races the client's own thread and corrupts its
+                         * connect state -> NULL write in smb2_connect_async_next_addr. The cull loop
+                         * below already filters this way; the read/write loops did not. */
+                        if (!smb2_is_server(smb2)) {
+                                continue;
+                        }
                         if (SMB2_VALID_SOCKET(smb2_get_fd(smb2))) {
                                 events = smb2_which_events(smb2);
                                 if (events) {
@@ -5346,6 +5355,11 @@ int smb2_serve_port(struct smb2_server *server, const int max_connections, smb2_
 
                         /* for each client context ready to read, process that context */
                         for (smb2 = smb2_active_contexts(); smb2; smb2 = smb2->next) {
+                                /* Only OUR server contexts, not this app's outbound client contexts in
+                                 * the shared global list (see the fdset loop above). */
+                                if (!smb2_is_server(smb2)) {
+                                        continue;
+                                }
                                 if (SMB2_VALID_SOCKET(smb2_get_fd(smb2)) && FD_ISSET(smb2_get_fd(smb2), &rfds)) {
                                         if (smb2_service(smb2, POLLIN) < 0) {
                                                 smb2_set_error(smb2, "smb2_service (in) failed with : "
